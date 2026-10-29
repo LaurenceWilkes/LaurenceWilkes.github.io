@@ -1,0 +1,117 @@
+<!--
+  Things to be changed will be marked with:
+
+    To be changed!
+
+-->
+<!DOCTYPE html>
+<html lang="en">
+<title>Laurence Wilkes</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../w3styles.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.50.0/dist/tabler-icons.min.css">
+<link rel="stylesheet" href="../theme.css">
+
+
+<body class="black-olive w3-content" style="max-width:1600px">
+
+<!-- Sidebar/menu -->
+<nav class="w3-sidebar w3-collapse dark-olive w3-animate-left" style="z-index:3;width:300px" id="mySidebar">
+  <div class="w3-container w3-padding-16">
+    <button onclick="w3_close()" class="w3-button w3-hide-large w3-right w3-large" title="Close menu">&times;</button>
+    <img src="../images/RiceFields.jpg" alt="Profile" class="w3-round" style="width:45%">
+    <h4><b>Laurence Wilkes</b></h4>
+    <p class="text-warm-beige">Applied mathematician - interested in scientific computing, mathematical modelling, numerical algorithms, and HPC</p>
+  </div>
+  <div class="w3-bar-block">
+    <a href="../index.html#projects" onclick="w3_close()" class="w3-bar-item w3-button w3-padding text-olive"><i class="ti ti-layout-grid icon-fw w3-margin-right"></i>Projects</a>
+    <a href="../index.html#about" onclick="w3_close()" class="w3-bar-item w3-button w3-padding"><i class="ti ti-user icon-fw w3-margin-right"></i>About</a>
+  </div>
+  <div class="w3-panel w3-large">
+    <a href="https://linkedin.com/in/laurence-wilkes" target="_blank">
+      <i class="ti ti-brand-linkedin w3-hover-opacity"></i>
+    </a>
+    &nbsp;
+    &nbsp;
+    <a href="https://github.com/laurencewilkes" target="_blank">
+      <i class="ti ti-brand-github w3-hover-opacity"></i>
+    </a>
+  </div>
+</nav>
+
+<!-- Overlay effect when opening sidebar on small screens -->
+<div class="w3-overlay w3-hide-large w3-animate-opacity" onclick="w3_close()" style="cursor:pointer" title="Close side menu" id="myOverlay"></div>
+
+<!-- Page content -->
+<main class="w3-main" style="margin-left:300px">
+
+  <!-- Header -->
+  <header id="title">
+    <a href="#"><img src="../images/RiceFields.jpg" alt="Profile" class="w3-circle w3-right w3-margin w3-hide-large w3-hover-opacity" style="width:65px"></a>
+    <button class="w3-button w3-hide-large w3-xxlarge w3-hover-text-lime" onclick="w3_open()"><i class="ti ti-menu-2"></i></button>
+    <div class="w3-container">
+      <a href="../index.html#portfolio">&larr;Back to projects</a>
+      <h1><b>GPU accelerated Julia sets</b></h1> <!-- To be changed! -->
+      <div class="w3-bottombar"></div>
+      <p>C++, GPU computing, parallel algorithms</p>
+    </div>
+  </header>
+
+  <article class="w3-container w3-padding-large">
+
+    <h2>Overview</h2>
+    <p>
+      Introduce the problem, the motivation for the project,
+      and what you set out to investigate.
+    </p>
+
+    <h2>Implementation</h2>
+    <p>
+      Explain the approach, algorithms, libraries and
+      implementation decisions.
+    </p>
+
+    <h2>Results</h2>
+    <p>
+      Describe the findings, benchmarks and lessons learned.
+    </p>
+
+    <h2>Demo</h2>
+    <iframe
+      src="https://laurencewilkes.github.io/JuliaSetWeb/"
+      title="Live WebGPU Julia set demo"
+      style="width:100%; aspect-ratio:16/9; border:none; display:block;">
+    </iframe>
+
+    <p>
+      <a href="https://github.com/laurencewilkes">
+        View source code on GitHub
+      </a>
+    </p>
+
+  </article>
+
+  <!-- Footer -->
+  <footer class="w3-grid w3-padding-32 olive" style="grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:32px"> <!-- To be changed! -->
+    Footer
+  </footer>
+</main>
+
+<script>
+const sidebar = document.getElementById("mySidebar");
+const overlay = document.getElementById("myOverlay");
+
+function w3_open() {
+  sidebar.style.display = "block";
+  overlay.style.display = "block";
+}
+
+function w3_close() {
+  sidebar.style.display = "none";
+  overlay.style.display = "none";
+}
+</script>
+
+</body>
+</html>

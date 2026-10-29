@@ -20,7 +20,7 @@
   </div>
   <div class="w3-bar-block">
     <a href="#portfolio" onclick="w3_close()" class="w3-bar-item w3-button w3-padding text-olive"><i class="ti ti-layout-grid icon-fw w3-margin-right"></i>Projects</a>
-    <a href="#about" onclick="w3_close()" class="w3-bar-item w3-button w3-padding"><i class="ti ti-user icon-fw w3-margin-right"></i>ABOUT</a>
+    <a href="#about" onclick="w3_close()" class="w3-bar-item w3-button w3-padding"><i class="ti ti-user icon-fw w3-margin-right"></i>About</a>
   </div>
   <div class="w3-panel w3-large">
     <a href="https://linkedin.com/in/laurence-wilkes" target="_blank">
@@ -48,16 +48,22 @@
       <h1><b>Projects</b></h1>
       <div class="w3-section w3-bottombar w3-padding-16">
         <span class="w3-margin-right">Filter:</span>
-        <button class="w3-button gold">All</button>
-        <button class="w3-button dark-olive w3-hide-small"><i class="ti ti-math-integral w3-margin-right"></i>Maths</button>
-        <button class="w3-button dark-olive w3-hide-small"><i class="ti ti-music w3-margin-right"></i>Music</button>
-        <button class="w3-button dark-olive w3-hide-small"><i class="ti ti-terminal-2 w3-margin-right"></i>Programming</button>
+        <button class="w3-button gold project-filter" data-filter="all" aria-pressed="true">All</button>
+        <button class="w3-button dark-olive project-filter" data-filter="maths" aria-pressed="false">
+          <i class="ti ti-math-integral w3-margin-right"></i>Maths
+        </button>
+        <button class="w3-button dark-olive project-filter" data-filter="music" aria-pressed="false">
+          <i class="ti ti-music w3-margin-right"></i>Music
+        </button>
+        <button class="w3-button dark-olive project-filter" data-filter="programming" aria-pressed="false">
+          <i class="ti ti-terminal-2 w3-margin-right"></i>Programming
+        </button>
       </div>
     </div>
   </header>
 
   <!-- Portfolio Grid -->
-  <div class="w3-grid w3-padding" style="grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px">
+  <div id="projectGrid" class="w3-grid w3-padding" style="grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px">
     <!--
     <article>
       <img src="/w3images/p2.jpg" alt="Coffee" class="w3-hover-opacity" style="width:100%">
@@ -67,19 +73,37 @@
       </div>
     </article>
     -->
-    <article>
-      <div style="width: 100%; aspect-ratio: 1200 / 628;">
-        <iframe
-          src="images/advent-of-code-logo.html"
-          title="Advent of Code logo"
-          class="w3-hover-opacity"
-          style="width: 100%; height: 100%; border: none; display: block;">
-        </iframe>
-      </div>
-      <div class="w3-container dark-olive">
-        <p><b>Advent of Code Solutions</b></p>
-        <p>I like to use the AOC problems as a chance to acquaint myself with new languages. Most recently, I completed the 2021 calendar of problems in Java.</p>
-      </div>
+    <article data-categories="maths programming">
+      <a href="projects/julia-sets.html" class="project-card">
+        <div style="width:100%; aspect-ratio:1200 / 628;">
+          <iframe
+            src="images/previews/julia-set-ascii.html"
+            title="Julia set ASCII art"
+            class="w3-hover-opacity"
+            style="width:100%; height:100%; border:none; display:block;">
+          </iframe>
+        </div>
+        <div class="w3-container dark-olive">
+          <p><b>GPU accelerated Julia sets</b></p>
+          <p>Each point in a Julia set or the Mandelbrot set can be computed independently of the others. This makes them fantastic candidates for parallelisation. I have developed a C++ experiment comparing different levels of parallelisation, as well as a GPU-accelerated web demo.</p>
+        </div>
+      </a>
+    </article>
+    <article data-categories="programming">
+      <a href="projects/advent-of-code.html" class="project-card">
+        <div style="width: 100%; aspect-ratio: 1200 / 628;">
+          <iframe
+            src="images/previews/advent-of-code-logo.html"
+            title="Advent of Code logo"
+            class="w3-hover-opacity"
+            style="width: 100%; height: 100%; border: none; display: block;">
+          </iframe>
+        </div>
+        <div class="w3-container dark-olive">
+          <p><b>Advent of Code Solutions</b></p>
+          <p>I like to use the AOC problems as a chance to acquaint myself with new languages. Most recently, I completed the 2021 calendar of problems in Java.</p>
+        </div>
+      </a>
     </article>
   </div>
 
@@ -159,6 +183,24 @@ function w3_close() {
   sidebar.style.display = "none";
   overlay.style.display = "none";
 }
+
+const filterButtons = document.querySelectorAll(".project-filter");
+const projects = document.querySelectorAll("#projectGrid article");
+
+filterButtons.forEach(button => button.addEventListener("click", () => {
+  const filter = button.dataset.filter;
+
+  projects.forEach(project => {
+    project.hidden = filter !== "all" && !project.dataset.categories.split(" ").includes(filter);
+  });
+
+  filterButtons.forEach(b => {
+    const active = b === button;
+    b.classList.toggle("gold", active);
+    b.classList.toggle("dark-olive", !active);
+    b.setAttribute("aria-pressed", active);
+  });
+}));
 </script>
 
 </body>
