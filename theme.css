@@ -1,0 +1,57 @@
+body,h1,h2,h3,h4,h5,h6 {font-family:"Raleway",sans-serif}
+
+/* Main background */
+.black-olive {
+    background-color: #11160D !important; /* black olive */
+    color: #E8E1D0 !important;  /* cream */
+}
+
+/* Sidebar and project cards */
+.dark-olive {
+    background-color: #1C2212 !important; /* dark olive */
+    color: #E8E1D0 !important; /* cream */
+}
+
+/* Secondary text */
+.text-warm-beige {
+    color: #B6A782 !important; /* warm beige */
+}
+
+/* Teal accents: navigation links */
+.text-olive {
+    color: #87916A !important; /* olive (but dark) */
+}
+
+/* Black: selected filter button */
+.w3-button.gold {
+    background-color: #BB8857 !important; /* golden brown */
+    color: #17140D !important; /* blackish */
+}
+
+/* Grey and dark-grey surfaces: footer and tags */
+.olive {
+    background-color: #262A1A !important; /* olive */
+    color: #E8E1D0 !important; /* cream */
+}
+
+/* Button hover */
+.w3-button:hover {
+    background-color: #353C29 !important; /* light olive */
+    color: #E8E1D0 !important; /* cream */
+}
+
+.w3-button.gold:hover {
+    background-color: #BB8857 !important; /* light gold */
+    color: #17140D !important; /* almost blackish */
+}
+
+/* Hover text */
+.w3-hover-text-lime:hover {
+    color: #87916A !important; /* dark lime */
+}
+
+/* Separators */
+hr,
+.w3-bottombar {
+    border-color: #494A36 !important; /* brown-olive */
+}
