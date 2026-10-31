@@ -1,0 +1,221 @@
+<!-- LLM generated -->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Concertina — ASCII logo</title>
+
+  <style>
+    * { box-sizing: border-box; }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+    }
+
+    body {
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      background: #f5f0e6;
+    }
+
+    /* Same image-like canvas and aspect ratio as the Advent of Code logo. */
+    .concertina-logo {
+      container-type: inline-size;
+      display: grid;
+      place-items: center;
+      width: min(100%, 1200px);
+      aspect-ratio: 1200 / 628;
+      overflow: hidden;
+      background: #f5f0e6;
+    }
+
+    .logo-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font: 700 clamp(4px, .92cqw, 11px)/1 "Courier New", Courier, monospace;
+      white-space: nowrap;
+    }
+
+    .ascii-art {
+      display: block;
+      margin: 0;
+      font: inherit;
+      line-height: 1;
+      letter-spacing: 0;
+      white-space: pre;
+      text-align: left;
+    }
+
+    /* Warm, muted palette. */
+    .sage       { color: #526b48; }
+    .ochre      { color: #b58a38; }
+    .terracotta { color: #c16b38; }
+    .blue       { color: #527c91; }
+    .red        { color: #a84f49; }
+  </style>
+</head>
+
+<body>
+  <main class="concertina-logo" role="img"
+        aria-label="A concertina rendered as colourful ASCII art on a cream background.">
+
+    <div class="logo-content">
+      <pre id="concertina-art" class="ascii-art" aria-hidden="true"></pre>
+    </div>
+
+  </main>
+
+  <script>
+    /* ----------------------------------------------------------
+       1. ASCII drawing
+       One fixed-width string per row. Trailing spaces preserve alignment.
+       ---------------------------------------------------------- */
+
+    const artRows = [
+      "                               .-::+++**#@@@**++:-                                                     ",
+      "                        .-::+++++++++::::::::+*##*+:                                                   ",
+      "                 .-:++++*++++::\\----/-|::::::.. .\\ #*/...                 ..-..                        ",
+      "              +#@#*+:::|../\\.|:::::::-:. . .-.-:++**#######*+++::---::++++***#@##***#**+/              ",
+      "             *#########*++::::--|     \\:+******************##@@@@#*++::\\\\\\--\\:+++++++:::#/             ",
+      "            +@*****#*##@#@*.   .::++*************+++****##*++:-.    .\\::++*##*:::::++**++#.            ",
+      "           \\#*####*##+###***/\\+::#@#**##**###***+*##@@#**+:   \\::+++******#@#@**+++::--/**#            ",
+      "           #**+##*###+#*+*#@*#+: *+. *#. #@:+@@*@@@*@*#@#@+*@@*+******+*+++:\\\\./+:      /***           ",
+      "          +@##****##+#**|#@@@\\#@@+*@****+#+-:@:*#+*#**###**#-#@#**++::+\\..  *# |#+*++**/ :**+          ",
+      "         \\#+#******+#+*:*@@@:*@@*:@@@:@@@+@@@:@@+@##+##+#/@: :@: .:  *#:#:.:+-*| #:  /*@: +*#:         ",
+      "         *##+#*+:+###++*#@@*+@@@-@@@:#@@+#@@:*@:###+****#+*  @+ **+ -  .#*\\@+/-:+**    +@  +*#/        ",
+      "        +#::\\*\\-:+*@\\*/+@@@\\@@@:*@@**@@#+@@*+@@*#**+##**|#. *#.::@*-*:\\*:/** *..: +*:::#* * **#.       ",
+      "       .@+*\\*+.|+:#*|/*@@@:#@@*:@@#:@@@:@@@\\@#++++:+++#:*: \\@.:* ++:#@++\\   .\\:::+:+++::::*+ *@#       ",
+      "       #++++*.:-:+# ..@@@*+@@@\\@@@:#@@**@@+#@:+*::++*+::*  @+ +:+..:++\\  .+*#@*@#@+:+++.:+ -. #@*      ",
+      "      **/*\\*  : \\@:/ :@@@:@@@:*@@*+@@@:@@#+@*.:+.+*+*+:#. *#.++:++:#.  \\+##+++: *@#@+ :*:.##+/.#@+     ",
+      "    \\*@****#*/  #+.|\\@@@:#@@#:@@@:@@@:#@@:@@  .- *::*.*: \\@.:@::+#*   +#+:::*##* :++|   *+-:\\+ /##:    ",
+      "   :#***####*#/+# ||*@@*+@@@:@@@:#@@*+@@**@: \\  *:.*\\:*  #+.:-/:*:   *+\\:::*@#@@#*:.+#*  *:+#|. :*#/   ",
+      "   @*.  .*@**#:@\\+.:#@@\\@@@+*@@*+@@@:@@#:@*  . +* +*.*\\ +# :*+.|*\\  *+.:::+*+/ +#@*:#@#. /*|::@. +*#.  ",
+      "  *#     +@#@+#* .\\+@@:*@@#:@@@:@@@+#@@:#@*+++*@**@:*+ \\@.|+.+:\\:  *+.:-:+#@@@/.. .-/     *+-++:: +**  ",
+      " \\@*    :@#@#+@   +*@#:@@@:@@@+*@@#+@@*+@*+**#@#@@###*+@*  :-:@|. :# \\::::|--:@@@:#@@*.-- ++:+*+  .+*+ ",
+      " @+#*:+**+#@+@\\ \\.#@@\\@@@+*@@#:@@@:@@@:@#:+##:. .#@*******+##.*:  #+ :\\.:+*#+ /:: .--+@@@.:**: **: /+*:",
+      "#@####****#+#*  ..#@+*@@#:@@@\\@@@+*@@+#@:++#     +#:++#*#**+###*+:+-:. \\:*##@##+|**+  ::: |# \\:++|  |+@",
+      "@#**+:*++*::@    :@#\\@@@:#@@++@@#:@@#:@*:/@*    \\@@@+++*+#@#*@*****##*+:--. +##+:##@@#*|  |#.#+:+:  +*#",
+      "+#/+ :     @:    @@:*@@*+@@@\\@@@:#@@:#@:*/+@:-:*#***\\+#+*#@@@*++***:++*#@@@+-/  .. .*#@+  :#:: \\:\\ \\*#+",
+      "*##+*+....*#    +@#|@@@-@@@:*@@*+@@*+@*#+::*##@*+.. \\#++##@@***#++\\  .**+@@@@@+*@@@+:|    ++:\\|@|  **# ",
+      ":##@#@#@@@@#*+++@@+:@@*:@@@/@@@-#@@-@@\\#@#**+**+*+*+***###@***#+::   +*#@@+\\\\  .:+#@@#    *::.:*  :*#: ",
+      " +*#+####@#*#@*#@@*/@@*+@@*:@@#|@@++@*:+*:*++#+|@+:##*###@#***#::   :+#*@@*#*+**:  ..     *|+..   **#  ",
+      "  **#+@*###*+****@@.#@@\\@@#:@@@:@@*+@#++-+#|++ ++ \\@:-:+*@*#::++++:+**###-**++*@@@##:    :+|#:@. ++#\\  ",
+      "   **#+@*###*+*++#@#.@@++@@:*@@:#@@:@@#@*@@+**+@::@+    .+**##@##*+**@#@*::.-:: .*##|    *.: :: \\*#*   ",
+      "   .#***@*##*#+***#@*/@@:*@@.#@@:@@#:@*@#@@@@@@@##@*       . .+@@@@#++@*#@@##@@#/:/   \\:*#*++:  +*#    ",
+      "    /#**#@**#*#+*+*@@+:@@/#@#.@@#:@@*:@*@+@+@*#****@+           /+#@@@*  .. ...#@@@. +*\\.+*#*. \\#@:    ",
+      "     :#**#@**#**++*#@@:+@@/#@*.@@*+@@++@*@+#+@*@***+@:              ..:@@*+###. |-. :#  +@**\\  ###     ",
+      "      :***@#***+*:++*@@/+@#/@@*/@@++@@+*@*#*#+@+@+*++@/          .::  /**+:**@@#@+ \\#. +@@*   :@@\\     ",
+      "       +***@**+*+#*@:*@@.*@#/@@+:@@+*@@:#@*#***#*#+*++@.         |**          +**: #\\ :@@*   .***      ",
+      "        ****#+******+.*@@.#@*:@@:+@@:#@@:##*#***#*#+*:*@          : . \\.         .#+ .@#:    ++#.      ",
+      "         ***+#+****+++/#@#.#@+:@@:*@@:#@@:@#**#+#****+/##         /\\:*\\:/      \\:@*  #*     \\**+       ",
+      "          #+:**++*+*+:/.#@*.@@++@@/*@@:@@#:@***#+#+*: @#         :/* +::* + ..:#  *@      *+*        ",
+      "          .#++**++++*/::/@@*.@@:+@@/#@#:@@*:@+***+@+#+**#@*          :/ *+-:::/ #*.:@.     :*#\\        ",
+      "           /#+++*+*++*+: *@@+/@@/*@#-#@#:@@++@+*+*+@+#+#*#@*          . - .* ::  +*#:     .***         ",
+      "            /#+:+*+#:+#::-+@@::@@.*@#/@@*:@@:*@+#+*+#+#:+@+                             **#.         ",
+      "             :#++++:**+@:./*@@::@@.#@#/@@++@@:*@+#+*+#+#/+@:                           :#*+          ",
+      "              /*####*@*+#+/.+@@**@@+@@#+@@+*@@:#@*#+**#+# :@:                    .-:+**#*#           ",
+      "                .::++*++##+*+:--:+::+**+#@@*@@@*@@*#+***+#+* +@/             .-+**####***+#\\           ",
+      "                                        .../+****@@**+******* +@.     -:+**##@@#******+++:.            ",
+      "                                                  +#**++*+***+ +#::**###****#@@**++:-.                 ",
+      "                                                   /#@####+#**: /+++++++++++:-.                        ",
+      "                                                    .:++**#*@*@*+*++++:-.                              "
+    ];
+
+
+    /* ----------------------------------------------------------
+       2. Colour placement
+
+       Sage outlines the instrument.
+       Blue and sage alternate through the bellows.
+       Ochre highlights the stronger structural details.
+       Terracotta picks out the right-hand end board.
+       ---------------------------------------------------------- */
+
+    function colourFor(character, column, row) {
+      if (character === ' ') return null;
+
+      const x = column / 102;
+      const y = row / 46;
+
+      const strongMark = '#@*'.includes(character);
+      const mediumMark = '+:'.includes(character);
+
+      // Alternating blue and sage ribs through the bellows.
+      if (x >= 0.22 && x <= 0.66) {
+        if (strongMark) return 'ochre';
+
+        const fold = Math.floor((x - 0.22) / 0.055);
+
+        return fold % 2 === 0 ? 'blue' : 'sage';
+      }
+
+      // Engraving and buttons on the right-hand end board.
+      if (x > 0.66 && y > 0.13 && y < 0.88) {
+        if (strongMark) return 'terracotta';
+        if (mediumMark) return 'ochre';
+
+        return 'sage';
+      }
+
+      // Left end board and outer edges.
+      return strongMark ? 'ochre' : 'sage';
+    }
+
+
+    /* ----------------------------------------------------------
+       3. Renderer
+
+       Groups adjacent characters of the same colour into spans.
+       The artwork above remains a clean, editable block of ASCII rows.
+       ---------------------------------------------------------- */
+
+    const art = document.getElementById('concertina-art');
+    const fragment = document.createDocumentFragment();
+
+    artRows.forEach((line, rowIndex) => {
+      const rowElement = document.createElement('span');
+
+      let activeClass = null;
+      let activeText = '';
+
+      function flushRun() {
+        if (!activeText) return;
+
+        const span = document.createElement('span');
+
+        if (activeClass) {
+          span.className = activeClass;
+        }
+
+        span.textContent = activeText;
+        rowElement.appendChild(span);
+
+        activeText = '';
+      }
+
+      [...line].forEach((character, columnIndex) => {
+        const nextClass = colourFor(character, columnIndex, rowIndex);
+
+        if (nextClass !== activeClass) {
+          flushRun();
+          activeClass = nextClass;
+        }
+
+        activeText += character;
+      });
+
+      flushRun();
+
+      fragment.appendChild(rowElement);
+      fragment.appendChild(document.createTextNode('\n'));
+    });
+
+    art.appendChild(fragment);
+  </script>
+</body>
+</html>
