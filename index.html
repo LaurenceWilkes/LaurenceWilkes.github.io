@@ -2,6 +2,7 @@
 <html lang="en">
 <title>Laurence Wilkes</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/x-icon" href="favicon.svg">
 <link rel="stylesheet" href="w3styles.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.50.0/dist/tabler-icons.min.css">
@@ -19,7 +20,7 @@
     <p class="text-warm-beige">Applied mathematician - interested in scientific computing, mathematical modelling, numerical algorithms, and HPC</p>
   </div>
   <div class="w3-bar-block">
-    <a href="#portfolio" onclick="w3_close()" class="w3-bar-item w3-button w3-padding text-olive"><i class="ti ti-layout-grid icon-fw w3-margin-right"></i>Projects</a>
+    <a href="#portfolio" onclick="w3_close()" class="w3-bar-item w3-button w3-padding text-olive"><i class="ti ti-layout-grid icon-fw w3-margin-right"></i>Posts and Projects</a>
     <a href="#about" onclick="w3_close()" class="w3-bar-item w3-button w3-padding"><i class="ti ti-user icon-fw w3-margin-right"></i>About</a>
   </div>
   <div class="w3-panel w3-large">
@@ -45,7 +46,7 @@
     <a href="#"><img src="/images/RiceFields.jpg" alt="Profile" class="w3-circle w3-right w3-margin w3-hide-large w3-hover-opacity" style="width:65px"></a>
     <button class="w3-button w3-hide-large w3-xxlarge w3-hover-text-lime" onclick="w3_open()"><i class="ti ti-menu-2"></i></button>
     <div class="w3-container">
-      <h1><b>Projects</b></h1>
+      <h1><b>Posts and Projects</b></h1>
       <div class="w3-section w3-bottombar w3-padding-16">
         <span class="w3-margin-right">Filter:</span>
         <button class="w3-button gold project-filter" data-filter="all" aria-pressed="true">All</button>
@@ -63,7 +64,7 @@
   </header>
 
   <!-- Portfolio Grid -->
-  <div id="projectGrid" class="w3-grid w3-padding" style="grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px">
+  <div id="projectGrid" class="w3-grid w3-padding" style="grid-template-columns:repeat(auto-fit,minmax(350px,1fr));gap:16px">
     <!--
     <article>
       <img src="/w3images/p2.jpg" alt="Coffee" class="w3-hover-opacity" style="width:100%">
@@ -73,6 +74,36 @@
       </div>
     </article>
     -->
+    <article data-categories="maths">
+      <a href="projects/stable-fluids.html" class="project-card">
+        <div style="width:100%; aspect-ratio:1200 / 628;">
+          <iframe
+            src="images/previews/smoke-ascii.html"
+            title="Smoke simulation"
+            style="width:100%; height:100%; border:none; display:block;">
+          </iframe>
+        </div>
+        <div class="w3-container dark-olive">
+          <p><b>Stable fluids: the underlying equations</b></p>
+          <p>Here, I've created a simple web implementation of Jos Stam's stable fluid simulation to produce colourful smoke that you can interact with. The document I followed didn't go into too much detail on the maths behind the simulation so I was interested to work backwards and reconstruct the maths from the partial implementation.</p>
+        </div>
+      </a>
+    </article>
+    <article data-categories="maths programming">
+      <a href="projects/ripple-simulation.html" class="project-card">
+        <div style="width:100%; aspect-ratio:1200 / 628;">
+          <iframe
+            src="images/previews/spiral-ascii.html"
+            title="ASCII spiral"
+            style="width:100%; height:100%; border:none; display:block;">
+          </iframe>
+        </div>
+        <div class="w3-container dark-olive">
+          <p><b>Ripple simulations</b></p>
+          <p>I have created a few simulations which attempt to produce an accurate depiction of ripples on the surface of a liquid. This one is the most realistic of the bunch is a WebGPU finite difference simulation of the wave equations in 2 dimensions using GPU shaders for both the update rules and the rendering.</p>
+        </div>
+      </a>
+    </article>
     <article data-categories="maths programming">
       <a href="projects/julia-sets.html" class="project-card">
         <div style="width:100%; aspect-ratio:1200 / 628;">
@@ -84,8 +115,24 @@
           </iframe>
         </div>
         <div class="w3-container dark-olive">
-          <p><b>GPU accelerated Julia sets</b></p>
-          <p>Each point in a Julia set or the Mandelbrot set can be computed independently of the others. This makes them fantastic candidates for parallelisation. I have developed a C++ experiment comparing different levels of parallelisation, as well as a GPU-accelerated web demo.</p>
+          <p><b>Parallelised Julia sets</b></p>
+          <p>Each point in a Julia set or the Mandelbrot set can be computed independently of the others. This makes them fantastic candidates for parallelisation. This is a C++ experiment comparing different levels of parallelisation, as well as a GPU-powered web demo.</p>
+        </div>
+      </a>
+    </article>
+    <article data-categories="music">
+      <a href="projects/online-concertina.html" class="project-card">
+        <div style="width:100%; aspect-ratio:1200 / 628;">
+          <iframe
+            src="images/previews/concertina-logo.html"
+            title="Concertina"
+            class="w3-hover-opacity"
+            style="width:100%; height:100%; border:none; display:block;">
+          </iframe>
+        </div>
+        <div class="w3-container dark-olive">
+          <p><b>Online Concertina</b></p>
+          <p>This was a little demo of a concertina produced with an LLM. It works well if you have muscle memory for the button locations on a concertina but chords don't always sound due to most keyboards having a low key rollover.</p>
         </div>
       </a>
     </article>
@@ -132,9 +179,11 @@
   <!-- About -->
   <section class="w3-container w3-padding-large" style="margin-bottom:32px">
     <h4><b>About Me</b></h4>
-    <p>I am a researcher in applied mathematics and computer science. I am fascinated by applications of mathematics to real world problems.
+    <p>
+    I am a researcher in applied mathematics and computer science. I am fascinated by applications of mathematics to real world problems.
     </p>
-    <p>My interests include high-dimensional approximation theory, computational geometry, numerical linear algebra, combinatorial optimisation, numerical methods for differential equations, and many more.
+    <p>
+    My interests include high-dimensional approximation theory, computational geometry, numerical linear algebra, combinatorial optimisation, numerical methods for differential equations, music, physics, and many more.
     </p>
     <hr>
   </section>
@@ -202,6 +251,7 @@ filterButtons.forEach(button => button.addEventListener("click", () => {
   });
 }));
 </script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
 
 </body>
 </html>
