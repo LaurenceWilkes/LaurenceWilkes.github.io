@@ -1,13 +1,8 @@
-<!--
-  Things to be changed will be marked with:
-
-    To be changed!
-
--->
 <!DOCTYPE html>
 <html lang="en">
 <title>Laurence Wilkes</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/x-icon" href="../favicon.svg">
 <link rel="stylesheet" href="../w3styles.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.50.0/dist/tabler-icons.min.css">
@@ -52,9 +47,9 @@
     <button class="w3-button w3-hide-large w3-xxlarge w3-hover-text-lime" onclick="w3_open()"><i class="ti ti-menu-2"></i></button>
     <div class="w3-container">
       <a href="../index.html#portfolio">&larr;Back to projects</a>
-      <h1><b>GPU accelerated Julia sets</b></h1> <!-- To be changed! -->
+      <h1><b>Parallelised Julia sets</b></h1>
       <div class="w3-bottombar"></div>
-      <p>C++, GPU computing, parallel algorithms</p>
+      <p>C++, GPU computing, WebGPU, OpenCL, parallel algorithms</p>
     </div>
   </header>
 
@@ -62,22 +57,97 @@
 
     <h2>Overview</h2>
     <p>
-      Introduce the problem, the motivation for the project,
-      and what you set out to investigate.
+      TLDR: Check out the <a href="#demo">WebGPU demo at the bottom!</a>
     </p>
+    <p>
+      Julia sets are slightly lesser known but similarly produced fractal cousins of the Mandelbrot set.
+      They arise from the asymptotic behaviour of repeated iterates of non-constant meromorphic functions mapping the Riemann sphere onto itself.
+      Each such function defines a unique Julia set. Here, we look at the most widely studied family, defined by the quadratic polynomial
+      \[
+        p(z) = z^2 + c
+        ,
+      \]
+      for some complex number \(c \in \mathbb{C}\).
+    </p>
+    <p>
+      A complex number belongs to the (filled) Julia set for the complex polynomial \(p\) if, under repeated iterations of the operation \(p\), its value does not spiral out to infinity.
+      That is to say that \(z \in \mathbb{C} \) is in the set if the complex value
+      \[
+      p^n(z) = \underbrace{p(p(\ldots p(}_{\times n} \!z) \ldots))
+      \]
+      remains bounded as \(n\) tends to infinity.
+    </p>
+    <img src="../images/JuliaSmall.jpg" alt="A Julia set" style="display: block; max-width: 65%; height: auto; margin: 0 auto;">
 
     <h2>Implementation</h2>
     <p>
-      Explain the approach, algorithms, libraries and
-      implementation decisions.
+      Whether a specific complex number is in a Julia set for a polynomial \(p\) depends only on the number itself and so a naive method for calculating a pictoral representation of a Julia set involves simply assigning a complex number to each pixel and then performing repeated iterations of \(p\) until a desired tolerance is reached.
+    </p>
+    <p>
+      It can be shown that, if the value attained by \(|p^n(z)|\) reaches \(2\) for some \(n\), then the value will surely approach infinity with larger \(n\) and the point will not be in the set.
+      For each point, the code will perform \(1000\) iterations of \(p\) and assign a colour to that point depending on how many iterations it took for the value to reach \(2\) (if at all).
+      To produce smoother colour gradients, the value produced estimates a continuous escape time based on how far the value of \(|p^n(z)|\) travels beyond \(2\) after the escape.
     </p>
 
     <h2>Results</h2>
     <p>
-      Describe the findings, benchmarks and lessons learned.
+      The image above was produced using this C++ implementation. To compare the
+      different approaches, I benchmarked the time taken to render a
+      \(6400 \times 4000\) image, with up to 1000 iterations per pixel.
+      The benchmark was run on my laptop, which has integrated Intel graphics.
     </p>
 
-    <h2>Demo</h2>
+    <div class="w3-responsive">
+      <table class="w3-table w3-bordered">
+        <thead>
+          <tr>
+            <th>Implementation</th>
+            <th>Time</th>
+            <th>Speed-up</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Plain CPU</td>
+            <td>33.1631 s</td>
+            <td>1&times;</td>
+          </tr>
+          <tr>
+            <td>Multithreaded CPU</td>
+            <td>4.68771 s</td>
+            <td>7.1&times;</td>
+          </tr>
+          <tr>
+            <td>GPU (OpenCL)</td>
+            <td>0.193511 s</td>
+            <td>171&times;</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>
+      The GPU implementation is approximately <b>171 times faster</b> than the plain CPU version and around <b>24 times faster</b> than the multithreaded implementation. Even with integrated graphics, the GPU version easily exploits the embarrassingly parallel naive approximation.
+    </p>
+
+    <p>
+      The benchmark uses the fixed complex constant
+      \(c = -0.7 + 0.256i\), at a resolution of \(6400 \times 4000\) pixels, with the time being taken as the mean of three benchmark trials.
+    </p>
+
+    <p>
+      <a href="https://github.com/LaurenceWilkes/JuliaSet"
+         target="_blank" rel="noopener noreferrer">
+        <i class="ti ti-brand-github"></i>
+        View the C++ implementation on GitHub
+      </a>
+    </p>
+
+    <h2 id="demo">Demo</h2>
+    <p>This is the result of my experimenting with WebGPU to produce a real time version of the approximation.</p>
+    <p>
+    The cursor position represents a complex number \(c \in \mathbb{C}\). The live Julia set produced is the one which corresponds to \(p(z) = z^2 + c\).
+    </p>
     <iframe
       src="https://laurencewilkes.github.io/JuliaSetWeb/"
       title="Live WebGPU Julia set demo"
@@ -85,8 +155,8 @@
     </iframe>
 
     <p>
-      <a href="https://github.com/laurencewilkes">
-        View source code on GitHub
+      <a href="https://github.com/LaurenceWilkes/JuliaSetWeb">
+        View the demo source code on GitHub
       </a>
     </p>
 
@@ -112,6 +182,7 @@ function w3_close() {
   overlay.style.display = "none";
 }
 </script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
 
 </body>
 </html>
