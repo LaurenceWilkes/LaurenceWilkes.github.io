@@ -58,227 +58,128 @@
     <a href="#visualisation">Skip to the visual demo at the bottom.</a>
     <p>
       Here, we explore the numerical methods underlying Jos Stam's <a href="https://graphics.cs.cmu.edu/nsp/course/15-464/Fall09/papers/StamFluidforGames.pdf" target="_blank">Real-Time Fluid Dynamics for Games</a> and implement a two-dimensional semi-Lagrangian fluid simulation.
+    </p>
+    <p>
+      The method of Stam is intended for real-time applications such as computer games or in lower-end hardware and so the specific solution techniques are geared towards a low cost simulation whilst still maintaining stability at a larger time-step to distance-step ratio.
+
       The central idea is to solve the incompressible Navier&ndash;Stokes equations by splitting the problem into a sequence of simpler operations which can be solved via stable finite difference steps.
     </p>
 
     <p>
-      The fluid is represented on a uniform grid over a square domain.
-      Each grid cell stores a velocity vector and a scalar dye density (in this case, three independent colour channels).
-      The velocity determines how the fluid moves and the density is transported by the flow.
+      The simulation works on a grid of pixels, each representing a \( (1/N) \times (1/N) \) square in the square domain.
+      Each pixel stores a scalar density, representing the concentration of a dye in that square, and a velocity vector, which represents the movement of the fluid.
     </p>
 
     <p>
-      The incompressible Navier&ndash;Stokes equations are
+      At each step of the simulation, the source is added (both to the dye matrix and to the velocity matrix), the velocity <em>diffuses</em>, <em>projects</em>, <em>advects</em>, and then <em>projects</em> again, and the density <em>diffuses</em> and then <em>advects</em>.
+    </p>
+
+    <p>
+      The simulation works as a fractional step method where Navier&ndash;Stokes is split with a first-order splitting; the local error is \( O(\Delta t^2) \) per step.
+    </p>
+
+    <h3>Diffusion</h3>
+
+    <p>
+      The diffusion step is a finite difference version of solving the equation
       \[
-        \frac{\partial \mathbf{u}}{\partial t}
-        + (\mathbf{u}\cdot\nabla)\mathbf{u}
-        = -\nabla p + \nu\nabla^2\mathbf{u} + \mathbf{f},
-        \qquad
-        \nabla\cdot\mathbf{u}=0.
+        \frac{\partial \boldsymbol{x}}{\partial t}
+        = \nu \nabla^2 \boldsymbol{x}.
       \]
+      The time derivative is represented by <code>(x[i, j] - x0[i, j]) / dt</code> at each point \((i, j)\), and the Laplacian is discretised using the 5-point stencil <pre><code>N * N * ( x[i-1, j] + x[i+1, j] + x[i, j-1] + x[i, j+1] - 4 * x[i, j]) </code></pre>
+    <p>
+      The update rule for the quantity <code>x</code> is a stable method whereby
+      the values of <code>x[i, j]</code> are chosen which, when diffused
+      backwards, yield the initial <code>x0[i, j]</code>. This produces a
+      linear system which is solved with Gauss&ndash;Seidel.
+    </p>
+
+    <h3>Advection</h3>
+
+    <p>The advection step solves the advection equation</p>
+
+    \[
+      \frac{\partial x}{\partial t}
+      + \boldsymbol{u} \cdot \nabla x = 0,
+    \]
+
+    <p>which in turn implies that</p>
+
+    \[
+      \frac{\mathrm{d}}{\mathrm{d}t}
+      \tilde{x}(q(t), t) = 0,
+    \]
+
+    <p>
+      where \( \tilde{x}(q,t) \) represents the quantity \( x(q) \) at time
+      \( t \) and position \( q \), and \( q(t) \) represents the position of
+      a "particle" at time \( t \). Here, \( q(t) \) satisfies
+      \( \dot{q}(t) = \boldsymbol{u}(q(t),t) \).
     </p>
 
     <p>
-      Here, \(\mathbf{u}\) is the velocity field, \(p\) is the pressure, \(\nu\) is the viscosity and \(\mathbf{f}\) represents external forces. The divergence constraint expresses the incompressibility of the fluid.
+      In essence, we assume that the quantity represented by \( x \) (either
+      dye density or a component of the velocity in our case) is transported
+      along the path of the velocity. This is once again implemented by
+      backtracing: the initial location of a particle arriving at
+      <code>x[i,j]</code> is computed, and <code>x[i,j]</code> is interpolated
+      from the four nearest values of <code>x0</code>.
     </p>
+
+    <h3>Projection</h3>
 
     <p>
-      The dye density \(\rho\) is governed by an advection-diffusion equation:
+      Finally, the projection step done to the velocity field in-between and
+      after the diffusion and advection enforces the incompressibility constraint:
     </p>
-
-    <p class="w3-center">
-      \[
-        \frac{\partial \rho}{\partial t}
-        + \mathbf{u}\cdot\nabla\rho
-        = \kappa\nabla^2\rho,
-      \]
-    </p>
+    \[
+      \nabla \cdot \boldsymbol{u} = 0.
+    \]
 
     <p>
-      where \(\kappa\) is the dye diffusion coefficient.
-      The challenge is to approximate these equations efficiently while
-      maintaining a stable numerical simulation.
+      This is done by producing a value of \( \boldsymbol{u} \) which is divergence free.
+      We decompose
     </p>
-
-
-    <h2>Numerical method</h2>
+    \[
+      \boldsymbol{u} = \boldsymbol{u}^* + \nabla p
+    \]
+    <p>
+      where \( \boldsymbol{u}^* \) is divergence free, and enforce
+    </p>
+    \[
+      \begin{aligned}
+        \boldsymbol{0}
+        &= \nabla \cdot \boldsymbol{u}^* \\
+        &= \nabla \cdot (\boldsymbol{u} - \nabla p) \\
+        &= \nabla \cdot \boldsymbol{u} - \nabla^2 p.
+      \end{aligned}
+    \]
 
     <p>
-      Rather than solving the coupled equations directly, the simulation
-      uses a fractional-step method, splitting the evolution into three
-      principal operations: diffusion, advection and projection.
+      The value of \( p \) is selected to solve the Poisson equation
     </p>
-
-    <h4>1. Diffusion</h4>
+    \[
+      \nabla^2 p = \nabla \cdot \boldsymbol{u}
+    \]
+    <p>and the velocity field is corrected</p>
+    \[
+      \boldsymbol{u}^* = \boldsymbol{u} - \nabla p.
+    \]
 
     <p>
-      Diffusion describes the spreading of a quantity through the fluid.
-      For either a component of velocity or the dye density, this is
-      governed by the diffusion equation:
+      In practice, the field \( \nabla \cdot \boldsymbol{u} \) is approximated by
     </p>
-
-    <p class="w3-center">
-      \[
-        \frac{\partial x}{\partial t}
-        = \kappa\nabla^2 x.
-      \]
-    </p>
-
+    <pre><code>(u[i+1, j] - u[i-1, j] + v[i, j+1] - v[i, j-1]) * N / 2</code></pre>
     <p>
-      The spatial Laplacian is approximated using the five-point finite
-      difference stencil on a grid with spacing \(h=1/N\):
-    </p>
-
-    <p class="w3-center">
-      \[
-        \nabla^2 x_{i,j}
-        \approx N^2
-        \left(
-          x_{i-1,j}+x_{i+1,j}
-          +x_{i,j-1}+x_{i,j+1}-4x_{i,j}
-        \right).
-      \]
-    </p>
-
-    <p>
-      An implicit time discretisation gives a linear system for the
-      updated values:
-    </p>
-
-    <p class="w3-center">
-      \[
-        (1+4a)x_{i,j}^{n+1}
-        -a\sum_{\text{neighbours}}x^{n+1}
-        =x_{i,j}^{n},
-        \qquad a=\kappa\Delta t N^2.
-      \]
-    </p>
-
-    <p>
-      This system is solved iteratively using Gauss&ndash;Seidel.
-      Treating diffusion implicitly avoids the restrictive time-step
-      stability condition associated with an explicit discretisation.
-    </p>
-
-    <h4>2. Advection</h4>
-
-    <p>
-      Advection describes the transport of a quantity by the velocity
-      field. It is governed by:
-    </p>
-
-    <p class="w3-center">
-      \[
-        \frac{\partial x}{\partial t}
-        +\mathbf{u}\cdot\nabla x=0.
-      \]
-    </p>
-
-    <p>
-      Along a particle trajectory \(q(t)\), satisfying
-      \(\dot q(t)=\mathbf{u}(q(t),t)\), the transported quantity
-      remains constant:
-    </p>
-
-    <p class="w3-center">
-      \[
-        \frac{\mathrm{d}}{\mathrm{d}t}x(q(t),t)=0.
-      \]
-    </p>
-
-    <p>
-      The key insight behind the semi-Lagrangian method is to work
-      backwards along these trajectories. For each grid point, the
-      method estimates where the fluid particle currently occupying
-      that point originated:
-    </p>
-
-    <p class="w3-center">
-      \[
-        q_{\mathrm{back}}
-        \approx q-\Delta t\,\mathbf{u}(q,t).
-      \]
-    </p>
-
-    <p>
-      The new value is then obtained by interpolating the previous
-      field at this departure point. Bilinear interpolation uses the
-      four nearest grid values.
-      This backward-tracing approach is particularly useful because
-      it remains stable even for relatively large time steps.
-    </p>
-
-    <h4>3. Projection</h4>
-
-    <p>
-      The final operation enforces the incompressibility constraint:
-      \(\nabla\cdot\mathbf{u}=0\).
-      Numerical diffusion and advection do not necessarily preserve
-      this property, so the velocity field must be corrected.
-    </p>
-
-    <p>
-      The idea is to decompose the velocity into a divergence-free
-      component and a gradient field:
-    </p>
-
-    <p class="w3-center">
-      \[
-        \mathbf{u}=\mathbf{u}^*+\nabla p,
-        \qquad
-        \nabla\cdot\mathbf{u}^*=0.
-      \]
-    </p>
-
-    <p>
-      Taking the divergence gives the Poisson equation:
-    </p>
-
-    <p class="w3-center">
-      \[
-        \nabla^2p=\nabla\cdot\mathbf{u}.
-      \]
-    </p>
-
-    <p>
-      Once this equation is solved, the gradient of the pressure
-      potential is subtracted from the velocity:
-    </p>
-
-    <p class="w3-center">
-      \[
-        \mathbf{u}^*=\mathbf{u}-\nabla p.
-      \]
-    </p>
-
-    <p>
-      The Poisson equation is discretised using finite differences
-      and solved iteratively with Gauss&ndash;Seidel. The resulting pressure
-      gradient is then used to correct the velocity field.
-    </p>
-
-    <h4>Putting the steps together</h4>
-
-    <p>
-      Each time step begins by adding external sources. The velocity
-      field is then diffused, projected onto a divergence-free field,
-      advected through itself and projected again. The dye density
-      is subsequently diffused and advected using the updated velocity.
-    </p>
-
-    <p>
-      This is a first-order operator splitting of the underlying
-      equations, with a local splitting error of
-      \(O(\Delta t^2)\) per time step. The combination of implicit
-      diffusion, semi-Lagrangian advection and pressure projection
-      is what makes Stam's approach known as <i>Stable Fluids</i>.
+      where <code>u</code> is the horizontal component of the velocity and <code>v</code> is the vertical component.
+      Then the backtracking method with Gauss&ndash;Seidel is used to solve the Poisson equation, and the gradient field of the solution is used to correct the velocity.
     </p>
 
 
     <h2 id="visualisation">Visualisation</h2>
 
     <p>
-      The simulation uses a \(96\times96\) grid.
+      The simulation uses a \(96\times96\) grid overlayed on a canvas where the colours are interpolated from the nearest squares.
       Coloured dye is periodically injected with a velocity impulse from randomly selected edges, producing smoke-like patterns that reveal the movement of the fluid.
       The mouse or touchscreen can also be used to perturb the velocity field and interact with the flow.
     </p>
@@ -290,6 +191,13 @@
     </iframe>
 
   </article>
+
+
+  <!--
+  <footer class="w3-grid w3-padding-32 olive" style="grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:32px">
+    Footer
+  </footer>
+  -->
 </main>
 
 <script>
