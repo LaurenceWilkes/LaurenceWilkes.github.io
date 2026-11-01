@@ -1,0 +1,186 @@
+<!--
+  Things to be changed will be marked with:
+
+    To be changed!
+
+-->
+<!DOCTYPE html>
+<html lang="en">
+<title>Laurence Wilkes</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/x-icon" href="../favicon.svg">
+<link rel="stylesheet" href="../w3styles.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.50.0/dist/tabler-icons.min.css">
+<link rel="stylesheet" href="../theme.css">
+<style>
+.aoc-years { list-style: none; padding: 0; margin: 30px 0; }
+.aoc-years li { display: grid; grid-template-columns: 110px 1fr; gap: 24px; padding: 22px 0; border-top: 1px solid #8886; }
+.aoc-meta strong { display: block; font: 36px Georgia, serif; letter-spacing: -2px; }
+.aoc-meta span, .aoc-years small { font: 11px monospace; letter-spacing: 1px; }
+.aoc-years small { color: #ad7657; }
+.aoc-years h3 { font: 21px Georgia, serif; margin: 5px 0; }
+.aoc-years p { font-size: 13px; line-height: 1.7; margin: 5px 0; max-width: 600px; }
+.aoc-years a { color: inherit; text-decoration-color: #ad7657; text-underline-offset: 3px; }
+@media (max-width: 500px) { .aoc-years li { grid-template-columns: 75px 1fr; gap: 14px; } }
+</style>
+
+
+<body class="black-olive w3-content" style="max-width:1600px">
+
+<!-- Sidebar/menu -->
+<nav class="w3-sidebar w3-collapse dark-olive w3-animate-left" style="z-index:3;width:300px" id="mySidebar">
+  <div class="w3-container w3-padding-16">
+    <button onclick="w3_close()" class="w3-button w3-hide-large w3-right w3-large" title="Close menu">&times;</button>
+    <img src="../images/RiceFields.jpg" alt="Profile" class="w3-round" style="width:45%">
+    <h4><b>Laurence Wilkes</b></h4>
+    <p class="text-warm-beige">Applied mathematician - interested in scientific computing, mathematical modelling, numerical algorithms, and HPC</p>
+  </div>
+  <div class="w3-bar-block">
+    <a href="../index.html#projects" onclick="w3_close()" class="w3-bar-item w3-button w3-padding text-olive"><i class="ti ti-layout-grid icon-fw w3-margin-right"></i>Projects</a>
+    <a href="../index.html#about" onclick="w3_close()" class="w3-bar-item w3-button w3-padding"><i class="ti ti-user icon-fw w3-margin-right"></i>About</a>
+  </div>
+  <div class="w3-panel w3-large">
+    <a href="https://linkedin.com/in/laurence-wilkes" target="_blank">
+      <i class="ti ti-brand-linkedin w3-hover-opacity"></i>
+    </a>
+    &nbsp;
+    &nbsp;
+    <a href="https://github.com/laurencewilkes" target="_blank">
+      <i class="ti ti-brand-github w3-hover-opacity"></i>
+    </a>
+  </div>
+</nav>
+
+<!-- Overlay effect when opening sidebar on small screens -->
+<div class="w3-overlay w3-hide-large w3-animate-opacity" onclick="w3_close()" style="cursor:pointer" title="Close side menu" id="myOverlay"></div>
+
+<!-- Page content -->
+<main class="w3-main" style="margin-left:300px">
+
+  <!-- Header -->
+  <header id="title">
+    <a href="#"><img src="../images/RiceFields.jpg" alt="Profile" class="w3-circle w3-right w3-margin w3-hide-large w3-hover-opacity" style="width:65px"></a>
+    <button class="w3-button w3-hide-large w3-xxlarge w3-hover-text-lime" onclick="w3_open()"><i class="ti ti-menu-2"></i></button>
+    <div class="w3-container">
+      <h1><b>Advent of Code</b></h1>
+      <div class="w3-bottombar"></div>
+    </div>
+  </header>
+
+  <article class="w3-container w3-padding-large">
+    <h2>Overview</h2>
+    <p>
+      Advent of Code is a yearly coding challenge that (previously) released every day in December leading up to Christmas. (From 2025 there are only 12 challenge days.)
+      The challenges cover a broad range of language independent skills such as parsing, data structures, graph algorithms, optimisation, and simulation.
+
+
+    </p>
+    <p>The years I have completed are:</p>
+    <section class="aoc-list">
+      <ol class="aoc-years">
+        <li>
+          <div class="aoc-meta">
+            <strong>2019</strong>
+            <span>PYTHON</span>
+          </div>
+          <div>
+            <small>PERSONAL FAVOURITE</small>
+            <h3>Day ?? &ndash; [Problem title]</h3>
+            <p>[A short description of the problem and what made it interesting.]</p>
+          </div>
+        </li>
+
+        <li>
+          <div class="aoc-meta">
+            <strong>2020</strong>
+            <span>C++</span>
+          </div>
+          <div>
+            <small>PERSONAL FAVOURITE</small>
+            <h3>Day ?? &ndash; [Problem title]</h3>
+            <p>[A short description of the problem and what made it interesting.]</p>
+          </div>
+        </li>
+
+        <li>
+          <div class="aoc-meta">
+            <strong>2021</strong>
+            <span>JAVA</span>
+          </div>
+          <div>
+            <small>PERSONAL FAVOURITE</small>
+            <h3>Day 18 &ndash; Snailfish</h3>
+            <p>
+              This involved the recursive arithmetic of these nested "Snailfish numbers".
+              The problem was a good chance to use Java's inheritance and other OO features.
+            </p>
+            <a href="https://github.com/LaurenceWilkes/AdventOfCode/blob/main/AOC21/18/Main.java">
+              View solution
+            </a>
+          </div>
+        </li>
+
+        <li>
+          <div class="aoc-meta">
+            <strong>2023</strong>
+            <span>JULIA</span>
+          </div>
+          <div>
+            <small>PERSONAL FAVOURITE</small>
+            <h3>Day ?? &ndash; [Problem title]</h3>
+            <p>[A short description of the problem and what made it interesting.]</p>
+          </div>
+        </li>
+
+        <li>
+          <div class="aoc-meta">
+            <strong>2024</strong>
+            <span>C++</span>
+          </div>
+          <div>
+            <small>PERSONAL FAVOURITE</small>
+            <h3>Day ?? &ndash; [Problem title]</h3>
+            <p>[A short description of the problem and what made it interesting.]</p>
+          </div>
+        </li>
+
+        <li>
+          <div class="aoc-meta">
+            <strong>2025</strong>
+            <span>RUST</span>
+          </div>
+          <div>
+            <small>PERSONAL FAVOURITE</small>
+            <h3>Day ?? &ndash; [Problem title]</h3>
+            <p>[A short description of the problem and what made it interesting.]</p>
+          </div>
+        </li>
+
+      </ol>
+
+      <p>
+        All my solutions are available in
+        <a href="https://github.com/LaurenceWilkes/AdventOfCode">the GitHub repository</a>.
+      </p>
+  </article>
+</main>
+
+<script>
+const sidebar = document.getElementById("mySidebar");
+const overlay = document.getElementById("myOverlay");
+
+function w3_open() {
+  sidebar.style.display = "block";
+  overlay.style.display = "block";
+}
+
+function w3_close() {
+  sidebar.style.display = "none";
+  overlay.style.display = "none";
+}
+</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+
+</body>
+</html>
