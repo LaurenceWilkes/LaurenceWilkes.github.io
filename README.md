@@ -10,12 +10,11 @@ Based off a w3.css template. Very rough and ready for now.
 ### Essential
 - Finish off projects which are already listed
     * Ripple simulation (barely started)
-    * Stable fluids (started)
 - Set up as a GitHub project
 
 ### To be done
 - Include dates and times 
-- Website can be drastically improved by not reloading all features each time: Use something like flask? At least research this
+- Website can be improved by html being generated somehow: Use something like flask? At least research this
 - Improve the Bio/tagline etc
 - Include a whole lot more other projects and things I have worked on
 
