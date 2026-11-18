@@ -7,6 +7,61 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.50.0/dist/tabler-icons.min.css">
 <link rel="stylesheet" href="../theme.css">
+<style>
+  .fluid-diagrams{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:8rem;
+    max-width:660px;
+    margin:1.5rem auto;
+    color:#263238
+  }
+  .fluid-diagrams figure{margin:0;padding:1rem;border-radius:8px;background:#cedace}
+  .fluid-diagrams figcaption{margin-bottom:.5rem;text-align:center;font-weight:600}
+  .fluid-diagrams svg{display:block;width:100%;max-width:220px;margin:auto}
+  .fluid-diagrams .node{fill:#f3f6f5;stroke:#53666d;stroke-width:1.6}
+  .fluid-diagrams text{fill:currentColor;font:16px system-ui,sans-serif;text-anchor:middle;dominant-baseline:middle}
+  .fluid-diagrams .small{font-size:14px}
+  .fluid-diagrams .link{fill:none;stroke:#53666d;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  .fluid-diagrams .loop{stroke:#52756b}
+  @media(max-width:560px){.fluid-diagrams{grid-template-columns:1fr}}
+</style>
+<style>
+  .grid-diagram{max-width:420px;margin:1.5rem auto;padding:1rem;background:#cedace;border-radius:8px}
+  .grid-diagram svg{display:block;width:100%}
+  .grid-diagram text{font:15px monospace;fill:#263238}
+</style>
+<style>
+  .hodge-viewer{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;align-items:center;gap:1rem;max-width:1100px;margin:1.5rem auto}
+  .hodge-viewer figure{margin:0;padding:.6rem;background:#cedace;border-radius:12px;overflow:hidden;text-align:center;min-width:0;text-color:#fff;}
+  .hodge-viewer img{display:block;width:100%;height:auto;border-radius:8px;mix-blend-mode:multiply}
+  .hodge-viewer figcaption{padding:.5rem .2rem .1rem;color: #263b30;}
+  .hodge-viewer .operator{font-size:1.8rem;text-align:center}
+  @media(max-width:650px){.hodge-viewer{grid-template-columns:1fr;gap:.25rem}.hodge-viewer figure img{max-width:320px;margin:auto}}
+</style>
+<style>
+  details {
+    margin: 1rem 0;
+    padding: 1rem 1.25rem;
+    background: #cedace;
+    border-radius: 10px;
+    color: #263b30;
+  }
+
+  details summary {
+    cursor: pointer;
+    font-weight: 600;
+    padding: 0.25rem;
+  }
+
+  details[open] summary {
+    margin-bottom: 1rem;
+  }
+
+  details p:last-child {
+    margin-bottom: 0;
+  }
+</style>
 
 
 <body class="black-olive w3-content" style="max-width:1600px">
@@ -53,133 +108,530 @@
 
   <article class="w3-container w3-padding-large">
 
+  <!-- Macros -->
+  \(
+    \newcommand{\bsu}{\boldsymbol{u}}
+    \newcommand{\bsq}{\boldsymbol{q}}
+    \newcommand{\bsf}{\boldsymbol{f}}
+    \newcommand{\bsx}{\boldsymbol{x}}
+    \newcommand{\calP}{\mathcal{P}}
+    \newcommand{\rmd}{\mathrm{d}}
+  \)
+
     <h2>Overview</h2>
 
     <a href="#visualisation">Skip to the visual demo at the bottom.</a>
+    <!--<p>NB: Since writing this, I found and read the full paper written about this technique.</p>-->
     <p>
       Here, we explore the numerical methods underlying Jos Stam's <a href="https://graphics.cs.cmu.edu/nsp/course/15-464/Fall09/papers/StamFluidforGames.pdf" target="_blank">Real-Time Fluid Dynamics for Games</a> and implement a two-dimensional semi-Lagrangian fluid simulation.
     </p>
     <p>
-      The method of Stam is intended for real-time applications such as computer games or in lower-end hardware and so the specific solution techniques are geared towards a low cost simulation whilst still maintaining stability at a larger time-step to distance-step ratio.
+      The method is intended for real-time applications such as for computer games or in lower-end hardware and so the specific solution techniques are geared towards a low-cost simulation whilst still maintaining stability at a larger time-step to distance-step ratio.
 
-      The central idea is to solve the incompressible Navier&ndash;Stokes equations by splitting the problem into a sequence of simpler operations which can be solved via stable finite difference steps.
+      The central idea is to solve the incompressible Navier&ndash;Stokes equations by splitting the problem into a sequence of simpler operations which can be solved via implicit finite difference steps and semi-Lagrangian advection.
+    </p>
+    <p>
+      The simulation works on a grid of cells, each representing a \( (1/N) \times (1/N) \) square in the square domain.
+      At each time step, several arrays are updated, each storing a value for every cell in the grid.
+      These arrays represent scalar fields: three store the RGB dye concentrations, and two store the horizontal and vertical components of the velocity field.
     </p>
 
     <p>
-      The simulation works on a grid of pixels, each representing a \( (1/N) \times (1/N) \) square in the square domain.
-      Each pixel stores a scalar density, representing the concentration of a dye in that square, and a velocity vector, which represents the movement of the fluid.
+      At each step of the simulation, the source is added (both to the dye matrix and to the velocity matrix), then a repeated pattern of operations is applied to the field.
+      The velocity <b>diffuses</b>, <b>projects</b>, <b>advects</b>, and then <b>projects</b> again, and the dye concentration simply <b>diffuses</b> and then <b>advects</b> at each time step.
     </p>
 
-    <p>
-      At each step of the simulation, the source is added (both to the dye matrix and to the velocity matrix), the velocity <em>diffuses</em>, <em>projects</em>, <em>advects</em>, and then <em>projects</em> again, and the density <em>diffuses</em> and then <em>advects</em>.
-    </p>
+    <section class="fluid-diagrams" aria-label="Fluid simulation step diagrams">
+      <figure>
+        <figcaption>For velocities</figcaption>
+        <svg viewBox="0 0 300 360" role="img" aria-label="Diffuse, project, advect, project, add impulse, then return to diffuse.">
+          <path class="link" d="M110 72v34m-4-5 4 5 4-5 M110 160v34m-4-5 4 5 4-5 M110 248v34m-4-5 4 5 4-5"/>
+          <path class="link loop" d="M185 312h55v-112 M240 160V48h-49m6-6-6 6 6 6"/>
+          <g class="node">
+            <rect x="35" y="24" width="150" height="48" rx="7"/>
+            <rect x="35" y="112" width="150" height="48" rx="7"/>
+            <rect x="35" y="200" width="150" height="48" rx="7"/>
+            <rect x="35" y="288" width="150" height="48" rx="7"/>
+            <rect x="190" y="160" width="100" height="40" rx="7"/>
+          </g>
+          <g>
+            <text x="110" y="48">Diffuse</text>
+            <text x="110" y="136">Project</text>
+            <text x="110" y="224">Advect</text>
+            <text x="110" y="312">Project</text>
+            <text class="small" x="240" y="180">Add impulse</text>
+          </g>
+        </svg>
+      </figure>
 
+      <figure>
+        <figcaption>For dyes</figcaption>
+        <svg viewBox="0 0 300 360" role="img" aria-label="Diffuse, advect, add impulse, then return to diffuse.">
+          <path class="link" d="M110 148v76m-4-5 4 5 4-5"/>
+          <path class="link loop" d="M185 254h55v-45 M240 169V124h-49m6-6-6 6 6 6"/>
+          <g class="node">
+            <rect x="35" y="100" width="150" height="48" rx="7"/>
+            <rect x="35" y="230" width="150" height="48" rx="7"/>
+            <rect x="190" y="169" width="100" height="40" rx="7"/>
+          </g>
+          <g>
+            <text x="110" y="124">Diffuse</text>
+            <text x="110" y="254">Advect</text>
+            <text class="small" x="240" y="189">Add impulse</text>
+          </g>
+        </svg>
+      </figure>
+    </section>
+
+    <!--
     <p>
       The simulation works as a fractional step method where Navier&ndash;Stokes is split with a first-order splitting; the local error is \( O(\Delta t^2) \) per step.
     </p>
+    -->
+    <p>We will look at each of the steps in turn and then work our way back towards Navier&ndash;Stokes.</p>
 
     <h3>Diffusion</h3>
 
     <p>
-      The diffusion step is a finite difference version of solving the equation
-      \[
-        \frac{\partial \boldsymbol{x}}{\partial t}
-        = \nu \nabla^2 \boldsymbol{x}.
-      \]
-      The time derivative is represented by <code>(x[i, j] - x0[i, j]) / dt</code> at each point \((i, j)\), and the Laplacian is discretised using the 5-point stencil <pre><code>N * N * ( x[i-1, j] + x[i+1, j] + x[i, j-1] + x[i, j+1] - 4 * x[i, j]) </code></pre>
+      In the diffusion step, we solve the implicit backward Euler update:
+    </p>
+    <pre><code> d0[i, j] = d[i, j] - dt * diff * N * N * (d[i-1, j] + d[i+1, j] + d[i, j-1] + d[i, j+1] - 4*d[i, j]) </code></pre>
     <p>
-      The update rule for the quantity <code>x</code> is a stable method whereby
-      the values of <code>x[i, j]</code> are chosen which, when diffused
-      backwards, yield the initial <code>x0[i, j]</code>. This produces a
-      linear system which is solved with Gauss&ndash;Seidel.
+      Where <code>d0</code> and <code>d</code> are the current and future values respectively, of the quantity which we are diffusing (one of the components of velocity or an RGB dye value).
+      The value <code>dt</code> is the timestep, <code>N</code> is the number of cells on each row or column, and <code>diff</code> is a constant dictating either the viscosity (for velocities) or the diffusion rate (for dyes).
+    </p>
+
+    <p>
+      For a small distance \(h > 0\) and a sufficiently smooth function \(f\), an approximation of the second derivative is
+      \[
+        \frac{\partial^2 f}{\partial x^2} = \frac{f(x + h, y) + f(x - h, y) - 2f(x, y)}{h^2} + O(h^2)
+        .
+      \]
+      We combine this with the approximation for the \(y\)-direction to get
+      \begin{align*}
+        \nabla^2 f
+        &=
+        \frac{\partial^2 f}{\partial x^2} + \frac{\partial^2 f}{\partial y^2}
+        \\
+        &=
+        \frac{f(x + h, y) + f(x - h, y) + f(x, y + h) + f(x, y - h) - 4f(x, y)}{h^2} + O(h^2)
+      \end{align*}
+    </p>
+
+    <p>
+      By rearranging, we can see that the diffusion step is a finite difference solution of the equation
+      \[
+        \frac{\partial d}{\partial t}
+        = \mu \nabla^2 d
+        ,
+      \]
+      where \(\mu\) represents the constant <code>diff</code> which will be the kinematic viscosity \(\nu\) for the velocity and a diffusion parameter \(\kappa\) for dye concentrations.
+
+      The time derivative is represented by <code>(d[i, j] - d0[i, j]) / dt</code> at each point \((i, j)\), and the Laplacian is discretised using the 5-point stencil
+    </p>
+    <pre><code>N * N * (d[i-1, j] + d[i+1, j] + d[i, j-1] + d[i, j+1] - 4 * d[i, j]).</code></pre>
+    <p>
+      Instead of being a simple update step where only the new value for <code>d[i, j]</code> appears in the equation, the equation creates a linear system which is approximated via Gauss&ndash;Seidel iterations which will certainly converge due to the fact that the matrix of the system is strictly diagonally dominant.
+      <!--For our purposes though, a finite number of iterations is perfectly sufficient for a good approximation.-->
+    </p>
+    <p>
+      Interestingly, if the domain is taken to be toroidal (the left and right connect and the top and bottom connect with periodic boundary conditions), then the matrix is circulant and so can be solved exactly utilising DFTs in only \(O(N^2 \log(N))\).
     </p>
 
     <h3>Advection</h3>
 
-    <p>The advection step solves the advection equation</p>
+    <p>
+    In this step we work out how the velocities transport a specific "particle" carrying our quantity of interest (which is again one of the RGB dye values or a component of the velocity itself) from one location to another.
 
-    \[
-      \frac{\partial x}{\partial t}
-      + \boldsymbol{u} \cdot \nabla x = 0,
-    \]
+    The update rule will again work backwards. Starting from a grid cell and using the velocity to approximate which specific point has been transported and interpolating its value from the nearest values.
+    That is to say, for each grid cell <code>d[i, j]</code>, we calculate where the point <code>[i, j]</code> was on the previous step using
+    </p>
+    <pre><code>
+      i' = i - N * dt * u[i, j];
+      j' = j - N * dt * v[i, j];
+    </code></pre>
+    <p>
+    Here, <code>u[i, j]</code> and <code>v[i, j]</code> are the velocity values in the \(x\) and \(y\) directions respectively (and <code>i'</code> and <code>j'</code> are floating point numbers).
 
-    <p>which in turn implies that</p>
+    </p>
 
-    \[
-      \frac{\mathrm{d}}{\mathrm{d}t}
-      \tilde{x}(q(t), t) = 0,
-    \]
+    <figure class="grid-diagram">
+      <svg viewBox="0 44 352 220" role="img" aria-label="Grid with four magenta points, an arrow and labelled points.">
+        <defs>
+          <pattern id="cells" width="44" height="44" patternUnits="userSpaceOnUse">
+            <path d="M22 0V44 M0 22H44" fill="none" stroke="#899c91" stroke-width="1.2"/>
+          </pattern>
+          <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+            <path d="M0 0L8 4L0 8Z" fill="#263238"/>
+          </marker>
+        </defs>
+
+        <rect width="396" height="264" fill="url(#cells)"/>
+
+        <g fill="#d000a8">
+          <circle cx="88" cy="132" r="4"/>
+          <circle cx="132" cy="132" r="4"/>
+          <circle cx="88" cy="176" r="4"/>
+          <circle cx="132" cy="176" r="4"/>
+        </g>
+
+        <path d="M118 151L220 132" fill="none" stroke="#263238" stroke-width="1.8" marker-end="url(#arrow)"/>
+
+        <circle cx="220" cy="132" r="4" fill="#111"/>
+        <text x="232" y="132" dominant-baseline="middle">[i, j]</text>
+        <circle cx="118" cy="151" r="4.5" fill="#111"/>
+        <text x="107" y="156" text-anchor="end" dominant-baseline="middle">[i', j']</text>
+      </svg>
+    </figure>
 
     <p>
-      where \( \tilde{x}(q,t) \) represents the quantity \( x(q) \) at time
-      \( t \) and position \( q \), and \( q(t) \) represents the position of
-      a "particle" at time \( t \). Here, \( q(t) \) satisfies
-      \( \dot{q}(t) = \boldsymbol{u}(q(t),t) \).
+      The four closest grid points to <code>[i', j']</code> (shown in magenta above) are then combined using bilinear interpolation to estimate the value of \(d\) at that position. This value is assigned to <code>d[i, j]</code>.
     </p>
 
     <p>
-      In essence, we assume that the quantity represented by \( x \) (either
-      dye density or a component of the velocity in our case) is transported
-      along the path of the velocity. This is once again implemented by
-      backtracing: the initial location of a particle arriving at
-      <code>x[i,j]</code> is computed, and <code>x[i,j]</code> is interpolated
-      from the four nearest values of <code>x0</code>.
+    In order to frame this mathematically, we assume the vector-valued function of time \(\bsq(t)\) denotes a position at each point in time.
+    We assume it represents the location of a small "particle" which is carried by the fluid and so should satisfy
+    \[
+    \frac{\rmd\bsq}{\rmd t}(t) = \bsu(\bsq(t), t)
+      ,
+    \]
+    where we use \(\bsu(\bsx, t)\) to represent the velocity vector at time \(t\) and 2D position \(\bsx\).
+    </p>
+
+    <p>
+    If we assume that the function \(\bsq(t)\) represents a path which reaches the point represented by <code>[i, j]</code> at the end of a time step, then the advection step is a way of updating the value of the field based on the equation
+    \[
+      \frac{\rmd}{\rmd t} d(\bsq(t), t) = 0
+      .
+    \]
+    </p>
+    <p>
+    We write the scalar field as \(d(\bsx, t)\), making its dependence on both position and time explicit.
+    </p>
+    <p>
+    By expanding this equation we get
+    \begin{align*}
+      \frac{\rmd}{\rmd t} d(\bsq(t), t)
+      &=
+      \frac{\partial d}{\partial t} + \frac{\rmd q_1}{\rmd t} \frac{\partial d}{\partial x} + \frac{\rmd q_2}{\rmd t} \frac{\partial d}{\partial y}
+      \\
+      &=
+      \frac{\partial d}{\partial t} + \bsu \cdot \nabla d
+      .
+    \end{align*}
+    Which produces the more familiar form of the advection equation
+    \[
+      \frac{\partial d}{\partial t}
+      + \bsu \cdot \nabla d = 0
+      .
+    \]
     </p>
 
     <h3>Projection</h3>
 
     <p>
-      Finally, the projection step done to the velocity field in-between and
-      after the diffusion and advection enforces the incompressibility constraint:
+      The projection step starts off by utilising two new temporary scalar fields, <code>div</code> and <code>p</code>.
     </p>
-    \[
-      \nabla \cdot \boldsymbol{u} = 0.
-    \]
+    <p>
+      Each cell in <code>div</code> is defined by
+    </p>
+    <pre><code>div[i, j] = 0.5 * h * (u[i+1, j] - u[i-1, j] + v[i, j+1] - v[i, j-1]); </code></pre>
+    <p>
+      which implies that <code>div</code> represents the discrete divergence field of \(\bsu\) multiplied by \(h^2\), where \(h = 1/N\).
+    </p>
+    <p>
+      Gauss&ndash;Seidel iterations are used again, this time to solve the system
+    </p>
+    <pre><code>div[i, j] = p[i-1, j] + p[i+1, j] + p[i, j-1] + p[i, j+1] - 4*p[i, j]</code></pre>
+    <p>
+      for the array <code>p</code>.
+      In this case though, unlike the diffusion step above, we are solving the Poisson equation
+      \[
+        h^2 \, \nabla^2 p = h^2 \, \nabla \cdot \bsu
+        ,
+      \]
+      for a field \(p\).
+      <!-- Does Gauss--Seidel converge here? The matrix is neither positive/negative definite nor strictly diagonally dominant -->
+    </p>
 
     <p>
-      This is done by producing a value of \( \boldsymbol{u} \) which is divergence free.
-      We decompose
+      Finally, the velocity field is updated as follows
     </p>
-    \[
-      \boldsymbol{u} = \boldsymbol{u}^* + \nabla p
-    \]
+    <pre><code>
+      u[IX(i,j)] -= 0.5*(p[IX(i+1,j)]-p[IX(i-1,j)])/h;
+      v[IX(i,j)] -= 0.5*(p[IX(i,j+1)]-p[IX(i,j-1)])/h;
+    </code></pre>
     <p>
-      where \( \boldsymbol{u}^* \) is divergence free, and enforce
+      implying that the velocities are replaced with \(\bsu^* = \bsu - \nabla p\).
     </p>
-    \[
-      \begin{aligned}
-        \boldsymbol{0}
-        &= \nabla \cdot \boldsymbol{u}^* \\
-        &= \nabla \cdot (\boldsymbol{u} - \nabla p) \\
-        &= \nabla \cdot \boldsymbol{u} - \nabla^2 p.
-      \end{aligned}
-    \]
+    <p>
+      The reasoning behind these steps becomes clear when taking the divergence of this new quantity
+      \[
+        \begin{aligned}
+          \nabla \cdot \bsu^*
+          &=
+          \nabla \cdot (\bsu - \nabla p)
+          \\
+          &=
+          \nabla \cdot \bsu - \nabla^2 p
+          \\
+          &=
+          0
+          .
+        \end{aligned}
+      \]
+      The projection step has succeeded in replacing the velocity field with one that is (approximately) divergence free, thus ensuring the condition \(\nabla \cdot \bsu = 0\) is met.
+
+      This projection is due to Helmholtz&ndash;Hodge, which tells us that, under appropriate boundary conditions, a vector field can be decomposed into a divergence-free component and a gradient field, which here is \(\nabla p\).
+    </p>
+
+    <div class="hodge-viewer">
+      <figure><img src="../images/stable-fluids/original.svg" alt="Original vector field"><figcaption>Original field</figcaption></figure>
+      <div class="operator" aria-hidden="true">=</div>
+      <figure><img src="../images/stable-fluids/divergence_free.svg" alt="Divergence-free component"><figcaption>Divergence-free component</figcaption></figure>
+      <div class="operator" aria-hidden="true">+</div>
+      <figure><img src="../images/stable-fluids/gradient.svg" alt="Gradient component"><figcaption>Gradient component</figcaption></figure>
+    </div>
+
+    <!--
+    <p>
+    NB: The convergence of Gauss&ndash;Seidel is harder to ascertain in this case but as a Grid Laplacian, the GS iterations should converge modulo an element of the kernel of the matrix. This being the set of vectors with equal elements means that the divergence field of \(p\) is unaffected by the inaccuracy of the solution.
+    </p>
+    -->
+
+
+    <h2>Tying it together</h2>
 
     <p>
-      The value of \( p \) is selected to solve the Poisson equation
+      The diffusion and advection equations derived above describe the effects of viscosity and transport on the velocity field. Together with pressure and external forces, these give the incompressible Navier&ndash;Stokes equations
+      \[
+        \begin{aligned}
+          \frac{\partial \bsu}{\partial t} + (\bsu\cdot\nabla)\bsu
+          &=
+          -\frac{1}{\rho}\nabla P + \nu \nabla^2\bsu + \boldsymbol{f}
+          ,
+          \\
+          \nabla\cdot\bsu &= 0
+          .
+        \end{aligned}
+      \]
+      Here \(P\) is the physical pressure, \(\rho\) is the density and \(\boldsymbol{f}\) represents external forces per unit mass.
+
+      In our case we will end up with an equivalent variant.
+      Denoting the projection from the projection step as \(\calP\), we can consider the differential equation
+      \[
+          \frac{\partial \bsu}{\partial t}
+          =
+          \calP \big(\nu\nabla^2\bsu - (\bsu\cdot\nabla)\bsu + \boldsymbol{f}\big)
+          .
+      \]
+      This is the first equation above (the momentum equation) with the projection \(\calP\) applied to both sides, noting that \(\calP \! \left(\frac{\partial \bsu}{\partial t}\right) = \frac{\partial \bsu}{\partial t}\) and that \(\calP (\nabla P) = 0\).
+
+      So long as \(\nabla \cdot \bsu_0 = 0\), this equation is equivalent to uncompressable Naver&ndash;Stokes because the right-hand side is always divergence free.
+      Taking the divergence of both sides gives
+      \[
+        \frac{\partial}{\partial t} \nabla \cdot \bsu = 0
+        ,
+      \]
+      and so \(\nabla \cdot \bsu(t) = \nabla \cdot \bsu(0) = 0\).
+      A vector field solving the equation for divergence free initial conditions should remain divergence free.
     </p>
-    \[
-      \nabla^2 p = \nabla \cdot \boldsymbol{u}
-    \]
-    <p>and the velocity field is corrected</p>
-    \[
-      \boldsymbol{u}^* = \boldsymbol{u} - \nabla p.
-    \]
 
     <p>
-      In practice, the field \( \nabla \cdot \boldsymbol{u} \) is approximated by
+      We now consider how the individual terms are handled by the numerical method.
     </p>
-    <pre><code>(u[i+1, j] - u[i-1, j] + v[i, j+1] - v[i, j-1]) * N / 2</code></pre>
+
+    <h3>Splitting</h3>
+
     <p>
-      where <code>u</code> is the horizontal component of the velocity and <code>v</code> is the vertical component.
-      Then the backtracking method with Gauss&ndash;Seidel is used to solve the Poisson equation, and the gradient field of the solution is used to correct the velocity.
+      The diffusion and advection steps of the finite difference scheme relate to different terms in the full Navier&ndash;Stokes equations.
+      Rather than solving all the contributions simultaneously, we split the evolution equation into simpler subproblems, each corresponding to an individual term.
+      These subproblems are then solved sequentially over each time step.
+      This approach is known as operator splitting.
+    </p>
+
+    <details>
+      <summary>
+        The dye time step produces \(d^{n + 1} = d^n + \Delta t (\kappa \nabla^2 d^n  - \bsu^n \cdot \nabla d^n + S_d) + O(\Delta t^2)\)
+      </summary>
+      <p>
+        At the \(n^\text{th}\) time step, the source is first added to the dye field, followed by the diffusion step, producing an intermediate field \(d^*\).
+        We have
+        \[
+          d^* = d^n + (\kappa \nabla^2 d^* + S_d) \Delta t
+          ,
+        \]
+        using the approximation for the Laplacian of \(d^*\).
+        The advection step updates the intermediate field \(d^*\) with
+        \[
+        d^{n+1}(x) \approx d^*(x - \bsu^n \Delta t)
+        \]
+        for each position \(x\).
+        (In practice, this uses the continuous bilinear interpolation of the field \(d^*\).)
+        We use the multivariate Taylor expansion to see that
+        \[
+          d^*(x - \bsu^n \Delta t) = d^*(x) - \Delta t \bsu^n \cdot \nabla d^*(x) + O(\Delta t^2)
+          .
+        \]
+        The time step then produces
+        \[
+          \begin{aligned}
+            d^{n + 1}
+            &= d^* - \Delta t \bsu^n \cdot \nabla d^* + O(\Delta t^2)
+            \\
+            &= d^n + \Delta t (\kappa \nabla^2 d^*  - \bsu^n \cdot \nabla d^* + S_d) + O(\Delta t^2)
+            \\
+            &= d^n + \Delta t (\kappa \nabla^2 d^n  - \bsu^n \cdot \nabla d^n + S_d) + O(\Delta t^2)
+            ,
+          \end{aligned}
+        \]
+        where we use the fact that \(d^* - d^n = O(\Delta t)\).
+        The local splitting error is \(O(\Delta t^2)\).
+      </p>
+    </details>
+
+    <details>
+      <summary>
+        The velocity update is \(
+            \bsu^{n + 1}
+            =
+            \bsu^n + \Delta t \, \calP\big(\nu \nabla^2 \bsu^n  - (\bsu^n \cdot \nabla) \bsu^n + \bsf)\big) + O(\Delta t^2)
+        \).
+      </summary>
+      <p>
+        The velocity update includes the projection steps.
+        If we assume that \(\bsu^n\) is already divergence free, then the result of the projection (using vector notation) applied to the partially updated field will be
+        \[
+          \begin{aligned}
+            \bsu^*
+            &= \calP\big(\bsu^n + \Delta t (\nu \nabla^2 \bsu^n + \bsf)\big)
+            \\
+            &= \bsu^n + \Delta t \calP\big(\nu \nabla^2 \bsu^n + \bsf\big)
+            ,
+          \end{aligned}
+        \]
+        where \(\bsf\) represents the source force added to the velocity.
+        The same is performed to the advection step
+        \[
+          \begin{aligned}
+            \bsu^{n + 1}
+            &= \calP\big(\bsu^* - \Delta t (\bsu^n \cdot \nabla) \bsu^* \big) + O(\Delta t^2)
+            \\
+            &= \bsu^n + \Delta t \, \calP\big(\nu \nabla^2 \bsu^*  - \calP((\bsu^n \cdot \nabla) \bsu^* + \bsf))\big) + O(\Delta t^2)
+            \\
+            &= \bsu^n + \Delta t \, \calP\big(\nu \nabla^2 \bsu^*  - (\bsu^n \cdot \nabla) \bsu^* + \bsf)\big) + O(\Delta t^2)
+            \\
+            &= \bsu^n + \Delta t \, \calP\big(\nu \nabla^2 \bsu^n  - (\bsu^n \cdot \nabla) \bsu^n + \bsf)\big) + O(\Delta t^2)
+            .
+          \end{aligned}
+        \]
+        The first projection step ensures that the velocity field used for advection is divergence free.
+        The second projection is then applied after advection to remove any divergence introduced during that step, ensuring that the velocity is again approximately divergence-free at the next time step.
+      </p>
+    </details>
+
+    <p>
+      Combining these results, we see that the numerical scheme approximates the following evolution equations to first order in time:
+      \[
+        \frac{\partial d}{\partial t}
+        = \underbrace{\kappa\nabla^2 d}_{\text{diffusion}}
+        - \underbrace{\bsu\cdot\nabla d}_{\text{advection}}
+        + \underbrace{S_d}_{\text{source}},
+      \]
+      whilst the diffusion and advection contributions to the velocity are
+      \[
+        \frac{\partial \bsu}{\partial t}
+        =
+        \calP\big(
+          \underbrace{\nu\nabla^2\bsu}_{\text{diffusion}}
+          - \underbrace{(\bsu\cdot\nabla)\bsu}_{\text{advection}}
+          + \underbrace{\boldsymbol{f}}_{\text{external force}}
+        \big)
+        .
+      \]
+      Here \(S_d\) and \(\boldsymbol{f}\) represent sources of dye and momentum respectively.
+    </p>
+
+    <p>
+      In the implementation, the source is added first, followed by diffusion and advection.
+      The velocity field additionally undergoes projection between these steps to maintain incompressibility.
+      This gives us a sequence of relatively inexpensive operations in place of solving the full coupled system at once.
+    </p>
+
+
+    <!--
+    <h3>What happened to the pressure?</h3>
+
+    <p>
+      The pressure term in the Navier&ndash;Stokes equations is what ensures that the velocity remains divergence free. Diffusion and advection alone do not generally preserve this condition, so after advancing these terms we need to correct the resulting velocity field.
+    </p>
+
+    <p>
+      This is precisely what the projection step does. As derived above, given a velocity field \(\bsu\), we solve
+      \[
+        \nabla^2 p = \nabla\cdot\bsu
+      \]
+      and obtain the corrected velocity
+      \[
+        \bsu^* = \bsu - \nabla p.
+      \]
+      The scalar field \(p\) determines the gradient component that must be removed to make the velocity divergence free.
+    </p>
+
+    <p>
+      To see why this is related to physical pressure, consider its contribution to the momentum equation over a single time step. The pressure gradient produces a change in velocity of the form
+      \[
+        \bsu^* - \bsu
+        = -\frac{\Delta t}{\rho}\nabla P_c,
+      \]
+      where \(P_c\) denotes the pressure correction associated with this step. Comparing this with the projection update, we identify
+      \[
+        p = \frac{\Delta t}{\rho}P_c.
+      \]
+      Thus, the variable <code>p</code> in the implementation is a scaled pressure correction, rather than the physical pressure itself.
+    </p>
+
+    <p>
+      The projection is therefore not an additional operation unrelated to Navier&ndash;Stokes. It is the numerical mechanism through which the pressure gradient enforces the incompressibility constraint.
+    </p>
+    -->
+
+    <!--
+    <h3>How is it stable?</h3>
+
+    <p>
+      The stability comes primarily from the choice of numerical methods.
+      Diffusion is treated implicitly using backward Euler, avoiding the restrictive time-step condition associated with an explicit diffusion update.
+      Advection, meanwhile, is handled using a semi-Lagrangian method: rather than calculating where a quantity moves forwards, we trace backwards from each grid cell and interpolate its previous value.
+    </p>
+
+    <p>
+      This semi-Lagrangian approach does not impose the usual CFL stability restriction on the time step.
+      Consequently, the simulation can take considerably larger steps without becoming numerically unstable.
+      This is the central idea behind Stam's Stable Fluids method.
+    </p>
+
+    <p>
+      However, stability does not mean accuracy.
+      The interpolation involved in advection introduces numerical diffusion, gradually smoothing out fine details in the flow.
+      Larger time steps also make the approximation of particle trajectories less accurate.
+      The method therefore trades some physical accuracy for computational efficiency and robustness.
+    </p>
+    -->
+
+    <h3>Conclusion</h3>
+
+    <p>
+      The essential idea is to approximate incompressible fluid flow through a sequence of relatively inexpensive operations.
+      Diffusion smooths the fields, advection transports them, and projection enforces incompressibility.
+      Together, these steps provide a stable and efficient approximation to the Navier&ndash;Stokes equations, well suited to interactive applications where visual quality and computational speed are more important than strict physical accuracy.
     </p>
 
 
     <h2 id="visualisation">Visualisation</h2>
 
     <p>
-      The simulation uses a \(96\times96\) grid overlayed on a canvas where the colours are interpolated from the nearest squares.
+      The browser-based simulation uses a \(96\times96\) grid overlaid on a canvas where the colours are interpolated from the nearest squares producing a smoother view of the fluid.
       Coloured dye is periodically injected with a velocity impulse from randomly selected edges, producing smoke-like patterns that reveal the movement of the fluid.
       The mouse or touchscreen can also be used to perturb the velocity field and interact with the flow.
     </p>
@@ -189,6 +641,10 @@
       title="Smoke simulation"
       style="max-width:80%; aspect-ratio:16/9; border:none; display:block; margin: 0 auto;">
     </iframe>
+
+    <p>
+    As the dye is constantly being injected and has nowhere else to go, the RGB values will eventually max out and the screen will fade to white.
+    </p>
 
   </article>
 
