@@ -186,29 +186,14 @@
     My interests include high-dimensional approximation theory, computational geometry, numerical linear algebra, combinatorial optimisation, numerical methods for differential equations, music, physics, and many more.
     </p>
     <hr>
+
+    <h4>Topics across my projects</h4>
+    <canvas id="wordcloud" style="display:block;width:100%;height:280px"></canvas>
   </section>
 
   <!-- Footer -->
   <footer class="w3-grid w3-padding-32 olive" style="grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:32px">
-    <!--
-    <div class="w3-container">
-      <h3>BLOG POSTS</h3>
-      <ul class="w3-ul w3-hoverable">
-        <li class="w3-padding-16">
-          <img src="/w3images/workshop.webp" alt="Workshop" class="w3-left w3-margin-right" style="width:50px">
-          <span class="w3-large">Lorem</span><br>
-          <span>Sed mattis nunc</span>
-        </li>
-        <li class="w3-padding-16">
-          <img src="/w3images/gondol.webp" alt="Gondola" class="w3-left w3-margin-right" style="width:50px">
-          <span class="w3-large">Ipsum</span><br>
-          <span>Praes tinci sed</span>
-        </li>
-      </ul>
-    </div>
-    -->
-
-    <div class="w3-container">
+    <!--<div class="w3-container">
       <h3>POPULAR TAGS</h3>
       <p>
         <span class="w3-tag olive w3-small w3-margin-bottom">Music</span>
@@ -216,6 +201,7 @@
         <span class="w3-tag olive w3-small w3-margin-bottom">Programming</span>
       </p>
     </div>
+    -->
   </footer>
 </main>
 
@@ -250,6 +236,34 @@ filterButtons.forEach(button => button.addEventListener("click", () => {
     b.setAttribute("aria-pressed", active);
   });
 }));
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/wordcloud2.js/1.2.3/wordcloud2.min.js"></script>
+<script>
+fetch('wordcloud.json')
+  .then(response => {
+    if (!response.ok) throw new Error('Could not load wordcloud.json');
+    return response.json();
+  })
+  .then(words => {
+    const canvas = document.getElementById('wordcloud');
+    let timer;
+    new ResizeObserver(() => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        canvas.width = canvas.clientWidth;
+        canvas.height = canvas.clientHeight;
+        WordCloud(canvas, {
+          list: words,
+          weightFactor: weight => 10 + 5 * Math.sqrt(weight),
+          gridSize: 7,
+          rotateRatio: 0.08,
+          backgroundColor: 'transparent',
+          color: () => ['#aab89a', '#d1b76c', '#e1dcc3'][Math.floor(Math.random() * 3)]
+        });
+      }, 100);
+    }).observe(canvas);
+  })
+  .catch(console.error);
 </script>
 <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
 
