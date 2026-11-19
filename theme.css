@@ -15,6 +15,21 @@ body,h1,h2,h3,h4,h5,h6 {font-family:"Raleway",sans-serif}
   margin-top: 16px;
 }
 
+.project-demo-frame {
+  display: block;
+  width: 100%;
+  max-width: 960px;
+  aspect-ratio: 16 / 9;
+  margin: 0 auto;
+  border: none;
+}
+
+@media (max-width: 700px) {
+  .project-demo-frame {
+    aspect-ratio: 4 / 3;
+  }
+}
+
 /* Main background */
 .black-olive {
     background-color: #11160D !important; /* black olive */
