@@ -77,8 +77,8 @@
             <small>Sample Problem:</small>
             <h3>Day 22 &ndash; Slam Shuffle</h3>
             <p>
-            This was a rather nice application of modular arithmetic.
-            The solution collects all the operations performed on the deck into one big operation and then inverts it for part 2.
+              A nice application of modular arithmetic.
+              Rather than simulating the shuffles, the operations can be combined into a single affine transformation, which can then be repeated and inverted to solve Part 2.
             </p>
             <a href="https://github.com/LaurenceWilkes/AdventOfCode/blob/main/AOC19/22/SlamShuffle.py" target="_blank" rel="noopener noreferrer">
               View solution
@@ -95,9 +95,9 @@
             <small>Sample Problem:</small>
             <h3>Day 23 &ndash; Crab Cups</h3>
             <p>
-            Another problem with modular themes which scales beyond a naïve simulation for the second part.
-            Simulating with an array or vector is too slow and so a linked list is required.
-            As the values are integers, we store this in an array of <code>nextCup</code> values.
+              Another problem which scales beyond a naïve simulation for the second part.
+              Simulating with an array or vector is too slow and so a linked list is required.
+              As the values are integers, we store this in an array of <code>nextCup</code> values.
             </p>
             <a href="https://github.com/LaurenceWilkes/AdventOfCode/blob/main/AOC20/23/crabcups.cpp" target="_blank" rel="noopener noreferrer">
               View solution
@@ -115,7 +115,7 @@
             <h3>Day 18 &ndash; Snailfish</h3>
             <p>
               This involved the recursive arithmetic of these nested "Snailfish numbers".
-              The problem was a good chance to use Java's inheritance and other OO features.
+              The problem was a good chance to use Java's inheritance and other object-oriented features to represent the structure.
             </p>
             <a href="https://github.com/LaurenceWilkes/AdventOfCode/blob/main/AOC21/18/Main.java" target="_blank" rel="noopener noreferrer">
               View solution
@@ -132,7 +132,8 @@
             <small>Sample Problem:</small>
             <h3>Day 24 &ndash; Never Tell Me The Odds</h3>
             <p>
-            Predicting the trajectory of hailstones in 3D. Part 2 involves finding the trajectory of a rock which will collide with all the hailstones. A nice problem involving some integer Computational Geometry and solving a least squares problem (though my solver is very numerically dubious).
+              Given the trajectories of hailstones in 3D, the challenge is to find a single trajectory that intersects all of them.
+              The second part is particularly neat, as the problem can be reduced to solving an overdetermined linear system.
             </p>
             <a href="https://github.com/LaurenceWilkes/AdventOfCode/blob/main/AOC23/day24/HailstonePool.jl" target="_blank" rel="noopener noreferrer">
               View solution
@@ -149,8 +150,8 @@
             <small>Sample Problem:</small>
             <h3>Day 21 &ndash; Keypad Conundrum</h3>
             <p>
-            The idea was to find the shortest amount of button presses on many keypads which recursively controlled each other.
-            This solution isn't the most refined or optimised but this was one of the more enjoyable problems with a nice opportunity for some memoisation.
+              For this problem, we have to find the minimum number of button presses on a sequence of keypads each controlling the next.
+              This solution isn't the most refined or optimised but memoisation offers a huge speed up on the massive second part.
             </p>
             <a href="https://github.com/LaurenceWilkes/AdventOfCode/blob/main/AOC24/21/keypads.cpp" target="_blank" rel="noopener noreferrer">
               View solution
@@ -167,8 +168,8 @@
             <small>Sample Problem:</small>
             <h3>Day 8 &ndash; Playground</h3>
             <p>
-            We are tasked with connecting junction boxes located in 3D space starting with the closest together.
-            The problem ends up being a version of Kruskal's algorithm for the minimum spanning forest of a graph.
+              Connect junction boxes scattered through 3D space, starting with the closest pairs.
+              This turns out to be a variation of Kruskal's algorithm for constructing a minimum spanning forest.
             </p>
             <a href="https://github.com/LaurenceWilkes/AdventOfCode/blob/main/AOC25/08/main.rs" target="_blank" rel="noopener noreferrer">
               View solution
