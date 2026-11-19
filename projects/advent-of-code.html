@@ -10,14 +10,10 @@
 <style>
 .aoc-years { list-style: none; padding: 0; margin: 30px 0; }
 .aoc-years li { display: grid; grid-template-columns: 110px 1fr; gap: 24px; padding: 22px 0; border-top: 1px solid #8886; }
-.aoc-meta strong { display: block; font-size: 36px; font-weight: 700; letter-spacing: -2px; }
-.aoc-meta span, .aoc-years small { font-size: 11px; letter-spacing: 1px; }
-.aoc-years h3 { font-size: 21px; font-weight: 700; margin: 5px 0; }
-.aoc-years p { font-size: 13px; line-height: 1.7; margin: 5px 0; max-width: 600px; }
-.aoc-years a { color: inherit; text-underline-offset: 3px; }
+.aoc-years h3 { font-size: 21px; margin: 5px 0; }
+.aoc-years p { font-size: 13px; line-height: 1.7; margin: 0px 0; max-width: 600px; }
 @media (max-width: 500px) { .aoc-years li { grid-template-columns: 75px 1fr; gap: 14px; } }
 </style>
-
 
 <body class="black-olive w3-content" style="max-width:1600px">
 
@@ -64,8 +60,8 @@
   <article class="w3-container w3-padding-large">
     <h2>Overview</h2>
     <p>
-      Advent of Code is a yearly coding challenge that (previously) released every day in December leading up to Christmas. (From 2025 there are only 12 challenge days.)
-      The challenges cover a broad range of language independent skills such as parsing, data structures, graph algorithms, optimisation, and simulation.
+      Advent of Code is a yearly coding challenge that releases each day in December leading up to Christmas. (From 2025 there are only 12 challenge days.)
+      The challenges cover a broad range of language-independent skills such as parsing, data structures, graph algorithms, optimisation, and simulation.
 
 
     </p>
@@ -74,7 +70,7 @@
       <ol class="aoc-years">
         <li>
           <div class="aoc-meta">
-            <strong>2019</strong>
+            <h1>2019</h1>
             <span>PYTHON</span>
           </div>
           <div>
@@ -92,14 +88,14 @@
 
         <li>
           <div class="aoc-meta">
-            <strong>2020</strong>
+            <h1>2020</h1>
             <span>C++</span>
           </div>
           <div>
             <small>Sample Problem:</small>
             <h3>Day 23 &ndash; Crab Cups</h3>
             <p>
-            Another problem with modular themes which scales beyond simple simulation for the second part.
+            Another problem with modular themes which scales beyond a naïve simulation for the second part.
             Simulating with an array or vector is too slow and so a linked list is required.
             As the values are integers, we store this in an array of <code>nextCup</code> values.
             </p>
@@ -111,7 +107,7 @@
 
         <li>
           <div class="aoc-meta">
-            <strong>2021</strong>
+            <h1>2021</h1>
             <span>JAVA</span>
           </div>
           <div>
@@ -129,7 +125,7 @@
 
         <li>
           <div class="aoc-meta">
-            <strong>2023</strong>
+            <h1>2023</h1>
             <span>JULIA</span>
           </div>
           <div>
@@ -138,7 +134,7 @@
             <p>
             Predicting the trajectory of hailstones in 3D. Part 2 involves finding the trajectory of a rock which will collide with all the hailstones. A nice problem involving some integer Computational Geometry and solving a least squares problem (though my solver is very numerically dubious).
             </p>
-            <a href="https://github.com/LaurenceWilkes/AdventOfCode/blob/main/AOC23/24/HailstonePool.jl" target="_blank" rel="noopener noreferrer">
+            <a href="https://github.com/LaurenceWilkes/AdventOfCode/blob/main/AOC23/day24/HailstonePool.jl" target="_blank" rel="noopener noreferrer">
               View solution
             </a>
           </div>
@@ -146,7 +142,7 @@
 
         <li>
           <div class="aoc-meta">
-            <strong>2024</strong>
+            <h1>2024</h1>
             <span>C++</span>
           </div>
           <div>
@@ -154,7 +150,7 @@
             <h3>Day 21 &ndash; Keypad Conundrum</h3>
             <p>
             The idea was to find the shortest amount of button presses on many keypads which recursively controlled each other.
-            My solution isn't the most refined or optimised but this was one of the more enjoyable problems with a nice opportunity for some memoisation.
+            This solution isn't the most refined or optimised but this was one of the more enjoyable problems with a nice opportunity for some memoisation.
             </p>
             <a href="https://github.com/LaurenceWilkes/AdventOfCode/blob/main/AOC24/21/keypads.cpp" target="_blank" rel="noopener noreferrer">
               View solution
@@ -164,7 +160,7 @@
 
         <li>
           <div class="aoc-meta">
-            <strong>2025</strong>
+            <h1>2025</h1>
             <span>RUST</span>
           </div>
           <div>
@@ -172,8 +168,7 @@
             <h3>Day 8 &ndash; Playground</h3>
             <p>
             We are tasked with connecting junction boxes located in 3D space starting with the closest together.
-            The problem ends up being an implementation of Kruskal's algorithm for the minimum spanning forest of a graph.
-            <!--Not the easiest year as I couldn't quite get to grips with Rust but this problem was nice.-->
+            The problem ends up being a version of Kruskal's algorithm for the minimum spanning forest of a graph.
             </p>
             <a href="https://github.com/LaurenceWilkes/AdventOfCode/blob/main/AOC25/08/main.rs" target="_blank" rel="noopener noreferrer">
               View solution
@@ -182,11 +177,12 @@
         </li>
 
       </ol>
+    </section>
 
-      <p>
-        All my solutions are available in
-        <a href="https://github.com/LaurenceWilkes/AdventOfCode" target="_blank" rel="noopener noreferrer">the GitHub repository</a>.
-      </p>
+    <p>
+      All my solutions are available in
+      <a href="https://github.com/LaurenceWilkes/AdventOfCode" target="_blank" rel="noopener noreferrer">the GitHub repository</a>.
+    </p>
   </article>
 </main>
 
