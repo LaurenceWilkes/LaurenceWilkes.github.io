@@ -1,130 +1,154 @@
 [
   [
     "simulation",
-    20.26
+    16.09
+  ],
+  [
+    "colour",
+    11.98
   ],
   [
     "set",
-    13.08
+    11.49
   ],
   [
     "equation",
-    12.32
+    10.32
   ],
   [
     "Julia",
-    11.81
+    9.81
+  ],
+  [
+    "value",
+    8.98
   ],
   [
     "fluid",
-    10.81
+    8.81
+  ],
+  [
+    "ASCII",
+    8.75
+  ],
+  [
+    "art",
+    8.17
+  ],
+  [
+    "C++",
+    8.17
+  ],
+  [
+    "values",
+    7.63
   ],
   [
     "concertina",
-    9.75
+    7.17
   ],
   [
     "parallelisation",
-    9.75
+    7.17
   ],
   [
-    "stable",
-    9.0
-  ],
-  [
-    "GPU",
-    8.0
+    "clustering",
+    7.0
   ],
   [
     "point",
-    8.0
+    7.0
   ],
   [
-    "ripple",
-    8.0
+    "stable",
+    7.0
+  ],
+  [
+    "uses",
+    6.91
   ],
   [
     "time",
     6.83
   ],
   [
-    "C++",
-    6.17
+    "number",
+    6.81
   ],
   [
-    "value",
-    6.17
+    "step",
+    6.39
   ],
   [
-    "advent",
+    "pixel",
+    6.09
+  ],
+  [
+    "GPU",
     6.0
   ],
   [
-    "solutions",
+    "ripple",
     6.0
   ],
   [
-    "underlying",
-    6.0
+    "image",
+    5.98
   ],
   [
-    "web",
-    6.0
-  ],
-  [
-    "problems",
-    5.75
-  ],
-  [
-    "update",
+    "k-means",
     5.58
   ],
   [
-    "difference",
-    5.0
-  ],
-  [
-    "finite",
-    5.0
-  ],
-  [
-    "interact",
-    5.0
-  ],
-  [
-    "online",
-    5.0
-  ],
-  [
-    "mathematics",
-    4.75
-  ],
-  [
     "solution",
-    4.75
+    5.58
   ],
   [
-    "Java",
+    "algorithm",
+    5.39
+  ],
+  [
+    "jpeg",
+    5.32
+  ],
+  [
+    "colours",
+    5.09
+  ],
+  [
+    "advent",
+    5.0
+  ],
+  [
+    "images",
+    5.0
+  ],
+  [
+    "solutions",
+    5.0
+  ],
+  [
+    "underlying",
+    5.0
+  ],
+  [
+    "reduced",
+    4.58
+  ],
+  [
+    "second",
+    4.58
+  ],
+  [
+    "update",
     4.58
   ],
   [
     "problem",
-    4.58
-  ],
-  [
-    "produce",
-    4.58
-  ],
-  [
-    "WebGPU",
-    4.58
+    4.46
   ],
   [
     "field",
-    4.39
-  ],
-  [
-    "step",
     4.39
   ],
   [
@@ -132,71 +156,47 @@
     4.39
   ],
   [
+    "accurate",
+    4.32
+  ],
+  [
+    "rgb",
+    4.32
+  ],
+  [
+    "source",
+    4.32
+  ],
+  [
+    "based",
+    4.17
+  ],
+  [
+    "distance",
+    4.17
+  ],
+  [
     "iteration",
     4.17
   ],
   [
-    "values",
-    4.17
-  ],
-  [
-    "backwards",
+    "difference",
     4.0
   ],
   [
-    "button",
+    "finite",
     4.0
   ],
   [
-    "completed",
+    "interact",
     4.0
   ],
   [
-    "language",
+    "larger",
     4.0
   ],
   [
-    "mandelbrot",
+    "online",
     4.0
-  ],
-  [
-    "smoke",
-    4.0
-  ],
-  [
-    "wave",
-    4.0
-  ],
-  [
-    "approximation",
-    3.91
-  ],
-  [
-    "advection",
-    3.81
-  ],
-  [
-    "divergence",
-    3.81
-  ],
-  [
-    "number",
-    3.81
-  ],
-  [
-    "projection",
-    3.81
-  ],
-  [
-    "represents",
-    3.81
-  ],
-  [
-    "diffusion",
-    3.7
-  ],
-  [
-    "partial",
-    3.7
   ]
 ]

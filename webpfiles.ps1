@@ -1,8 +1,8 @@
 # Local directory containing files to convert
-$localDirectory = "C:\Users\Laurie\OneDrive\Documents\Projects\Website\images"
+$localDirectory = "C:\Users\Laurie\OneDrive\Documents\Projects\Website\images\kmeansascii"
 
 # Directory to save the converted files
-$destinationDirectory = "C:\Users\Laurie\OneDrive\Documents\Projects\Website\images"
+$destinationDirectory = "C:\Users\Laurie\OneDrive\Documents\Projects\Website\images\kmeansascii"
 
 # Quality level for conversion
 $quality = Read-Host "Enter quality level (0-100):"

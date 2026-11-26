@@ -27,7 +27,7 @@ EXCLUDE = set("""
     work works working well make made can would could one two three
     really quite even much many different various something
     http https www com org html github
-    jos stam produces new view followed due low chance
+    jos stam produces new view followed due low chance produce
 """.split())
 
 # Standard English stop words; kept locally to avoid an NLP dependency.
@@ -134,8 +134,8 @@ def main():
 
         for word in title_counts.keys() | desc_counts.keys() | body_counts.keys():
             scores[word] += (
-                5 * (word in title_counts)
-                + 3 * math.log2(1 + desc_counts[word])
+                4 * (word in title_counts)
+                + 2 * math.log2(1 + desc_counts[word])
                 + math.log2(1 + min(body_counts[word], 20))
             )
 

@@ -10,7 +10,7 @@ Based off a w3.css template. Very rough and ready for now.
 ### Essential
 - Finish off projects which are already listed
     * Ripple simulation (barely started)
-- Set up as a GitHub project
+    * More work on the K-means ASCII article.
 
 ### To be done
 - Include dates and times 
@@ -19,5 +19,8 @@ Based off a w3.css template. Very rough and ready for now.
 - Include a whole lot more other projects and things I have worked on
 
 ### Could do...
-- Come up with a better way of producing the preview ascii images
 - Set up the website to work with the wilkes.be domain
+
+### Done
+- Set up as a GitHub project
+- Come up with a better way of producing the preview ascii images

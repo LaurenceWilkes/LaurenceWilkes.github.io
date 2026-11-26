@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<title>Laurence Wilkes</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/x-icon" href="../favicon.svg">
+<link rel="stylesheet" href="../w3styles.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.50.0/dist/tabler-icons.min.css">
+<link rel="stylesheet" href="../theme.css">
+<style>
+  .image-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .image-grid figure { margin: 0; }
+  .image-grid img { width: 100%; border-radius: 8px; }
+  .image-grid figcaption { text-align: center; font-size: 0.9em; }
+  .ascii-example { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 12px; max-width: 760px; margin: 24px auto; }
+  .ascii-example img, .ascii-example iframe { width: 100%; aspect-ratio: var(--ratio, 4 / 3); border: 0; border-radius: 8px; }
+  .ascii-example img { object-fit: cover; }
+  .ascii-example-arrow { font-size: 2rem; }
+  .ascii-gallery { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin: 24px auto; }
+  .ascii-gallery > * { width: 100%; aspect-ratio: var(--ratio, 4 / 3); border: 0; border-radius: 8px; background: #222; }
+  .ascii-gallery div { display: grid; place-items: center; }
+  @media (max-width: 600px) {
+    .image-grid { grid-template-columns: 1fr; }
+    .ascii-gallery { grid-template-columns: 1fr; }
+    .ascii-example { gap: 8px; }
+    .ascii-example-arrow { font-size: 1.5rem; }
+  }
+</style>
+
+
+<body class="black-olive w3-content" style="max-width:1600px">
+
+<!-- Sidebar/menu -->
+<nav class="w3-sidebar w3-collapse dark-olive w3-animate-left" style="z-index:3;width:300px" id="mySidebar">
+  <div class="w3-container w3-padding-16">
+    <button onclick="w3_close()" class="w3-button w3-hide-large w3-right w3-large" title="Close menu">&times;</button>
+    <img src="../images/RiceFields.jpg" alt="Profile" class="w3-round" style="width:45%">
+    <h4><b>Laurence Wilkes</b></h4>
+    <p class="text-warm-beige">Applied mathematician - interested in scientific computing, mathematical modelling, numerical algorithms, and HPC</p>
+  </div>
+  <div class="w3-bar-block">
+    <a href="../index.html#projects" onclick="w3_close()" class="w3-bar-item w3-button w3-padding text-olive"><i class="ti ti-layout-grid icon-fw w3-margin-right"></i>Projects</a>
+    <a href="../index.html#about" onclick="w3_close()" class="w3-bar-item w3-button w3-padding"><i class="ti ti-user icon-fw w3-margin-right"></i>About</a>
+  </div>
+  <div class="w3-panel w3-large">
+    <a href="https://linkedin.com/in/laurence-wilkes" target="_blank">
+      <i class="ti ti-brand-linkedin w3-hover-opacity"></i>
+    </a>
+    &nbsp;
+    &nbsp;
+    <a href="https://github.com/laurencewilkes" target="_blank">
+      <i class="ti ti-brand-github w3-hover-opacity"></i>
+    </a>
+  </div>
+</nav>
+
+<!-- Overlay effect when opening sidebar on small screens -->
+<div class="w3-overlay w3-hide-large w3-animate-opacity" onclick="w3_close()" style="cursor:pointer" title="Close side menu" id="myOverlay"></div>
+
+<!-- Page content -->
+<main class="w3-main" style="margin-left:300px">
+
+  <!-- Header -->
+  <header id="title">
+    <a href="#"><img src="../images/RiceFields.jpg" alt="Profile" class="w3-circle w3-right w3-margin w3-hide-large w3-hover-opacity" style="width:65px"></a>
+    <button class="w3-button w3-hide-large w3-xxlarge w3-hover-text-lime" onclick="w3_open()"><i class="ti ti-menu-2"></i></button>
+    <div class="w3-container">
+      <h1><b>Colour, clustering and ASCII art</b></h1>
+      <div class="w3-bottombar"></div>
+      <p>November 2026 &middot; C++, image processing, k-means clustering, colour quantisation, ASCII art</p>
+    </div>
+  </header>
+
+  <article class="w3-container w3-padding-large">
+    <h2>Overview</h2>
+    <p>
+    The aim of this project was to produce a lightweight converter that takes an image and replaces it with a pixelated version using ASCII characters.
+    There are plenty of existing ASCII art generators which vary considerably in their techniques and approach.
+    What separates this one is the use of the k-means algorithm for colour discretisation and the direct use of the luma component Y from the JPEG image for character selection.
+    <!--There are plenty of different ASCII art generators [Research this?]-->
+    </p>
+    <div class="ascii-example" style="--ratio: 1920 / 1440;">
+      <img src="../images/kmeansascii/sydney-opera.webp" alt="Sydney opera house">
+      <span class="ascii-example-arrow" aria-hidden="true">&rarr;</span>
+      <iframe src="../images/kmeansascii/sydney-opera.html" title="ASCII Sydney opera house"></iframe>
+    </div>
+    <p>
+    This converter works by taking a JPEG image with colour information represented in the YCbCr colour space.
+    A font size can be selected by choosing the height of the characters.
+    Then a reduction step divides the image into blocks with the size of the bounding box of the characters (for Courier New, the glyph bounding box has the dimensions \(1229 \times 2320\) and so the width is the nearest integer width preserving this ratio).
+    Each block is replaced with a pixel whose colour is selected from the block as the closest to its mean colour.
+    The k-means algorithm is then performed on the reduced image.
+    This replaces each pixel colour with one from a reduced palette.
+    Finally, for each pixel in the reduced image, a character is selected whose coverage decreases linearly with the luma value, meaning that darker pixels have more coverage.
+    The result is saved in an HTML file so that it can be easily displayed.
+    </p>
+
+
+    <h2>JPEGs and YCbCr</h2>
+    <p>
+    I was keen to retain the colour information of the original image and display it with plain HTML/CSS.
+    So that the resulting file wouldn't be huge, I decided to run the image through a k-means clustering step so as to reduce the number of colours to a fixed set of size \(k\).
+    Furthermore, I decided to leave the JPEG image in its native YCbCr colour space.
+    This space, like RGB, uses three channels.
+    Two representing the colour information (chrominance) in the image and one representing the brightness (luma) of a pixel.
+    The reasoning behind using this colour space in JPEG images stems from the way our eyes perceive differences in colour and brightness.
+    We are far more sensitive to variations in intensity than variations in colour and so, in producing a JPEG image, more samples of the Y pixel will be produced.
+    In this way, my plan was that, in the k-means algorithm, I could use a distance measure that would give greater weight to the Y coordinate and less significance to the Cb and Cr values and so produce a more optimised reduction of the number of colours (needing fewer colours to produce a similar visual result to an equally weighted algorithm).
+    In practice, it didn't turn out this way and, for small values of \(k\), the results appear slightly better with a weighting favouring the colour values.
+    This may be due to the fact that the JPEG compression had already reduced the density of colour information a significantly.
+    Also, it was clear in the eventual results that the k-means algorithm reduced the vibrancy of the output image.
+    This is likely due to the fact that the colours that are produced are averages and the distinctive and highly saturated colours are lost.
+    </p>
+
+    <div class="ascii-example" style="--ratio: 1863 / 1920;">
+      <img src="../images/kmeansascii/gorilla.webp" alt="Gorilla">
+      <span class="ascii-example-arrow" aria-hidden="true">&rarr;</span>
+      <iframe src="../images/kmeansascii/gorilla.html" title="ASCII Gorilla"></iframe>
+    </div>
+
+    <p>
+    JPEG uses multiple techniques to reduce the file size such as performing a two-dimensional discrete cosine transform on every \(8 \times 8\) block of pixels and retaining the information of only the most significant coefficients, only sampling a subset of the colour information, as well as lossless data compression techniques such as Huffman coding.
+    The implementation uses the single-header library stb_image to load the JPEG data.
+    The colour information in JPEG files is usually in the YCbCr colour space but can also be in the RGB space.
+    I modified the stb_image library so that the information that is loaded is not converted to RGB and instead returns the raw YCbCr data.
+    The library returns an array of unsigned characters (bytes) which represent the colour information with each pixel represented by three consecutive byte values; the Y, Cb, and Cr values, respectively.
+    </p>
+
+    <h2>K-means</h2>
+    <p>
+    The k-means algorithm randomly selects \(k\) pixels as the initial "centroids".
+    At each stage of the algorithm, the pixels are partitioned based on which centroid they are closest to according to a chosen distance measure.
+    The centroids are then updated to be the mean colour of the pixels in their cluster.
+    Centroids with no assigned pixels are left the same.
+    This process repeats until the displacement of the centroids over each step becomes negligible.
+    The algorithm then replaces each pixel with its associated centroid colour.
+    In this way, the image is replaced with one having at most \(k\) distinct colours.
+    </p>
+
+    <p>
+    The distance used by the k-means algorithm for two colours \(a\) and \(b\) is
+    \[
+      d(a, b) = w_y (a_Y - b_Y)^2 + w_c \big((a_{Cb} - b_{Cb})^2 + (a_{Cr} - b_{Cr})^2\big)
+      .
+    \]
+    This involves a luma weight \(w_y > 0\) and a chroma weight \(w_c > 0\).
+    The square root can be omitted as it doesn't affect the ordering of distances.
+    </p>
+
+    <p>
+    In practice, the centroids have continuous values and the pixels themselves only have <code>unsigned char</code> coordinates.
+    This is handled by rounding the centroid coordinates to the nearest <code>unsigned char</code> value whenever they are assigned to a pixel.
+    </p>
+
+    <h3>The distance measure</h3>
+    <p>
+    The k-means algorithm includes a notion of distance between different colour values.
+    As mentioned before, I had originally thought that assigning a greater weight to the luma, and therefore punishing larger changes in the shading, would produce a more accurate representation of the pixelated version of the image.
+    In practice, the opposite seems to be true.
+    </p>
+
+    <p>
+    The following images show the result of applying the k-means algorithm to full-resolution images, thus restricting their colour palette.
+
+    The first is the original image, whilst the second and third are the images with the reduced colour palette.
+    The weightings for the centre images are \(w_y = 4.0\) and \(w_c = 1.0\), whereas the right images use \(w_y = 0.5\) and \(w_c = 1.0\).
+    </p>
+    <div class="image-grid">
+      <figure>
+        <img src="../images/kmeansascii/testImages/mountain.png" alt="Original image">
+        <figcaption>Original image</figcaption>
+      </figure>
+      <figure>
+        <img src="../images/kmeansascii/testImages/mountain_reduced6.png" alt="Luminosity-weighted reduction">
+        <figcaption>Reduced to 6 colours (greater luma weight)</figcaption>
+      </figure>
+      <figure>
+        <img src="../images/kmeansascii/testImages/mountain_reduced6_colourweighted.png" alt="Chroma-weighted reduction">
+        <figcaption>Reduced to 6 colours (greater chroma weights)</figcaption>
+      </figure>
+    </div>
+    <p>
+    For this image, the reduced versions both show banding in the sky.
+    The chroma-weighted image has a more noticeable inaccuracy in the shading on the shaded face of the Matterhorn.
+    The luma-weighted image uses less accurate colours for the rock which, to my eye, produces a less accurate representation overall.
+    </p>
+    <div class="image-grid">
+      <figure>
+        <img src="../images/kmeansascii/testImages/sonofman.png" alt="Original image">
+        <figcaption>Original image</figcaption>
+      </figure>
+      <figure>
+        <img src="../images/kmeansascii/testImages/sonofman_reduced25.png" alt="Luminosity-weighted reduction">
+        <figcaption>Reduced to 25 colours (greater luma weight)</figcaption>
+      </figure>
+      <figure>
+        <img src="../images/kmeansascii/testImages/sonofman_reduced25_colourweighted.png" alt="Chroma-weighted reduction">
+        <figcaption>Reduced to 25 colours (greater chroma weights)</figcaption>
+      </figure>
+    </div>
+    <p>
+    In this image, a larger pallet was required for the reductions to retain a reasonable degree of colour variation.
+    The chroma-weighted image reproduces the colours of the bricks, the tie, and the apple fairly accurately.
+    The luma-weighted image loses the colour of the apple but preserves slightly more detail on the apple and the right hand.
+    In this case again, it seems to me that the more accurate representation, and the one that will serve a pixelated representation better, is the one that preserves the colours better.
+    </p>
+
+    <p>
+    It seems that the averaging effects of the k-means algorithm negatively affect the colours and contrast of the image more than they affect the shading.
+    To counter the loss of vibrancy, the weight should be skewed in favour of the colour values.
+    </p>
+
+    <p>
+    Of course, experiments on just two test images of a randomised algorithm, for which the convergence depends on where the initial centroids lie, is not a clear indication of the superiority of the heavier chroma weights.
+    <!--We can perform the simple tests varying the weights again later with the full ASCII generator.-->
+    </p>
+
+    <h2>Output</h2>
+    <p>
+    The resulting image is stored in a plain HTML/CSS file.
+    In retrospect, it may have been a far better idea to perform some of the rendering in the browser and use JavaScript in the solution so that the output file didn't have to include tags for each and every colour change.
+    This may be a neat addition in the future.
+    </p>
+
+    <p>
+    The characters are directly and linearly related to the luma value.
+    The \(256\) possible luma values are divided into approximately equal intervals, one for each of the following characters:
+    </p>
+    <pre><code>
+    $@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/|()1{}[]?-_+~<>i!lI;:,^`.[SPACE]
+    </code></pre>
+    <p>
+    Each pixel is assigned a character based on its luma value.
+    </p>
+
+    <h2>Implementation</h2>
+
+    <p>
+    The C++ source can be found in the
+    <a href="https://github.com/LaurenceWilkes/kmeansascii" target="_blank">public GitHub repository</a>.
+
+    The command-line application accepts an image file path, an integer value for the desired number of colours, an integer value for the font size (with larger values producing a coarser representation), and, if there is another argument, the image will have a black background.
+    </p>
+    <h2>Gallery</h2>
+    <div class="ascii-gallery">
+      <iframe src="../images/kmeansascii/great-wave.html" title="ASCII Great Wave of Kanagawa"></iframe>
+      <iframe src="../images/kmeansascii/angel-of-the-north.html" title="ASCII Angel of the North"></iframe>
+      <iframe src="../images/kmeansascii/sierpinski.html" title="ASCII Sierpinski's Triangle"></iframe>
+      <iframe src="../images/kmeansascii/cheetah.html" title="ASCII Cheetah"></iframe>
+    </div>
+  </article>
+</main>
+
+<script>
+const sidebar = document.getElementById("mySidebar");
+const overlay = document.getElementById("myOverlay");
+
+function w3_open() {
+  sidebar.style.display = "block";
+  overlay.style.display = "block";
+}
+
+function w3_close() {
+  sidebar.style.display = "none";
+  overlay.style.display = "none";
+}
+</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+
+</body>
+</html>
