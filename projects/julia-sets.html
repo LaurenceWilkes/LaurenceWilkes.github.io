@@ -81,12 +81,13 @@
 
     <h2>Implementation</h2>
     <p>
-      Whether a specific complex number is in a Julia set for a polynomial \(p\) depends only on the number itself and so a naive method for calculating a pictoral representation of a Julia set involves simply assigning a complex number to each pixel and then performing repeated iterations of \(p\) until a desired tolerance is reached.
+      Whether a specific complex number is in a Julia set for a polynomial \(p\) depends only on the number itself and so a naive method for calculating a pictorial representation of a Julia set involves simply assigning a complex number to each pixel and then performing repeated iterations of \(p\) until a desired tolerance is reached.
     </p>
     <p>
-      It can be shown that, if the value attained by \(|p^n(z)|\) reaches \(2\) for some \(n\), then the value will surely approach infinity with larger \(n\) and the point will not be in the set.
-      For each point, the code will perform \(1000\) iterations of \(p\) and assign a colour to that point depending on how many iterations it took for the value to reach \(2\) (if at all).
-      To produce smoother colour gradients, the value produced estimates a continuous escape time based on how far the value of \(|p^n(z)|\) travels beyond \(2\) after the escape.
+      It can be shown that, if \(|p^n(z)|\) exceeds the escape radius \(R = \max(2, |c|)\) for some \(n\), then the value will approach infinity with larger \(n\) and the point will not be in the set.
+      For the value of \(c\) used in the benchmark below, this radius is \(2\).
+      For each point, the code performs up to \(1000\) iterations of \(p\) and assigns a colour depending on how many iterations it took for the value to exceed the escape radius (if at all).
+      To produce smoother colour gradients, the value produced estimates a continuous escape time based on how far the value of \(|p^n(z)|\) travels beyond the escape radius.
     </p>
 
     <h2>Results</h2>
@@ -149,6 +150,7 @@
     <iframe
       src="https://laurencewilkes.github.io/JuliaSetWeb/"
       title="Live WebGPU Julia set demo"
+      loading="lazy"
       class="project-demo-frame">
     </iframe>
 
